@@ -115,6 +115,7 @@ body::after {
   border: 1px solid rgba(255, 255, 255, 0.3);
   transition: width 0.5s ease; /* Smooth transition for the width */
   width: 100%; /* Default width */
+  position: relative;
 }
 
 /* Pokémon image container */
@@ -265,9 +266,20 @@ body::after {
   transition: width 0.3s ease, height 0.3s ease;
 }
 
-.player-image img {
-  width: 80px;
+/* Positioning player image in the bottom-right */
+.player-image {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 80px;  /* Adjust size as needed */
   height: 80px;
+}
+
+/* If needed, image inside player-image */
+.player-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* Buttons */
