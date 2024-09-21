@@ -304,7 +304,11 @@ const App = () => {
   };
 
   const playerImagesA = [
+    process.env.PUBLIC_URL + '/green.png',
+    process.env.PUBLIC_URL + '/silver.png',
+    process.env.PUBLIC_URL + '/haruka.png',
     process.env.PUBLIC_URL + '/jun.png',
+    process.env.PUBLIC_URL + '/chelen.png',
     // Add paths for other players
   ];
 
