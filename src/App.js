@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./App.css";
-import Popup from "./Popup";
 import { heldItems } from "./data/heldItems";
 import { pokemonList } from "./data/pokemonList";
-import battleItems from "./data/battleItems";
 
 class Team {
   constructor(name) {
