@@ -304,7 +304,7 @@ const App = () => {
   };
 
   const playerImagesA = [
-    'jun.jpg',
+    process.env.PUBLIC_URL + '/jun.jpg',
     // Add paths for other players
   ];
 
