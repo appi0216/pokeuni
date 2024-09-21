@@ -413,9 +413,6 @@ const App = () => {
               <div className="player-image">
                 <img src={playerImagesA} alt={`Player ${index + 1}`} />
               </div>
-              <div className="player-name-container">
-                <span className="player-name">{playerNamesA[index]}</span>
-              </div>
             </div>
           ))}
         </div>
