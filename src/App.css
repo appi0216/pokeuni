@@ -151,7 +151,7 @@ body::after {
 /* Icon container in the middle, centrally aligned */
 .icon-container {
   display: flex;
-  justify-content: center;
+  justify-content: left;
   align-items: center;
   flex-grow: 1; /* Automatically take up remaining space */
   padding: 0 10px; /* Optional: add padding for better spacing */
@@ -161,7 +161,7 @@ body::after {
 .icon-containerB {
 
   display: flex;
-  justify-content: center;
+  justify-content: right;
   align-items: center;
   flex-grow: 1; /* Automatically take up remaining space */
   padding: 0 10px; /* Optional: add padding for better spacing */
@@ -301,8 +301,16 @@ body::after {
   transition: width 0.3s ease, height 0.3s ease;
 }
 
-.preview-image {
+.ban-preview-image {
   width: 4vw;
+  height: auto;
+  margin: 0px;
+  cursor: pointer;
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+.pick-preview-image {
+  width: 5vw;
   height: auto;
   margin: 0px;
   cursor: pointer;

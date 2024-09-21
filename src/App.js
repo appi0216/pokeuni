@@ -355,7 +355,7 @@ const App = () => {
                   <img
                     src={teamA.bans[index].imageUrl}
                     alt={teamA.bans[index].name.English}
-                    className="preview-image"
+                    className="ban-preview-image"
                   />
                 ) : currentTeam === teamA &&
                   currentAction === "BAN" &&
@@ -364,7 +364,7 @@ const App = () => {
                   <img
                     src={selectedPokemon.imageUrl}
                     alt={selectedPokemon.name.English}
-                    className="preview-image"
+                    className="ban-preview-image"
                   />
                 ) : (
                   <span>{banOrderA[index]}</span> /* Display ban draft number */
@@ -389,7 +389,7 @@ const App = () => {
                     <img
                       src={teamA.picks[index].imageUrl}
                       alt={teamA.picks[index].name.English}
-                      className="preview-image"
+                      className="pick-preview-image"
                     />
                   ) : currentTeam === teamA &&
                     currentAction === "PICK" &&
@@ -398,7 +398,7 @@ const App = () => {
                     <img
                       src={selectedPokemon.imageUrl}
                       alt={selectedPokemon.name.English}
-                      className="preview-image"
+                      className="pick-preview-image"
                     />
                   ) : (
                     <span>
@@ -487,7 +487,7 @@ const App = () => {
                   <img
                     src={teamB.bans[index].imageUrl}
                     alt={teamB.bans[index].name.English}
-                    className="preview-image"
+                    className="ban-preview-image"
                   />
                 ) : currentTeam === teamB &&
                   currentAction === "BAN" &&
@@ -496,7 +496,7 @@ const App = () => {
                   <img
                     src={selectedPokemon.imageUrl}
                     alt={selectedPokemon.name.English}
-                    className="preview-image"
+                    className="ban-preview-image"
                   />
                 ) : (
                   <span>{banOrderB[index]}</span> /* Display ban draft number */
@@ -548,7 +548,7 @@ const App = () => {
                     <img
                       src={teamB.picks[index].imageUrl}
                       alt={teamB.picks[index].name.English}
-                      className="preview-image"
+                      className="pick-preview-image"
                     />
                   ) : currentTeam === teamB &&
                     currentAction === "PICK" &&
@@ -557,7 +557,7 @@ const App = () => {
                     <img
                       src={selectedPokemon.imageUrl}
                       alt={selectedPokemon.name.English}
-                      className="preview-image"
+                      className="pick-preview-image"
                     />
                   ) : (
                     <span>
