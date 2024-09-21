@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/pokeuni/static/css/main.b39d3954.css",
+    "main.css": "/pokeuni/static/css/main.e19498fc.css",
     "main.js": "/pokeuni/static/js/main.da477a98.js",
     "static/js/453.e8d349a6.chunk.js": "/pokeuni/static/js/453.e8d349a6.chunk.js",
     "index.html": "/pokeuni/index.html",
-    "main.b39d3954.css.map": "/pokeuni/static/css/main.b39d3954.css.map",
+    "main.e19498fc.css.map": "/pokeuni/static/css/main.e19498fc.css.map",
     "main.da477a98.js.map": "/pokeuni/static/js/main.da477a98.js.map",
     "453.e8d349a6.chunk.js.map": "/pokeuni/static/js/453.e8d349a6.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.b39d3954.css",
+    "static/css/main.e19498fc.css",
     "static/js/main.da477a98.js"
   ]
 }
