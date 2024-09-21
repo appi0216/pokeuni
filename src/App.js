@@ -415,7 +415,7 @@ const App = () => {
                 ))}
               </div>
               <div className="player-image">
-                <img src={playerImagesA} alt={`Player ${index + 1}`} />
+                <img src={playerImagesA[index]} alt={`Player ${index + 1}`} />
               </div>
             </div>
           ))}
