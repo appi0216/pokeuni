@@ -98,7 +98,6 @@ const App = () => {
     Array(5).fill(Array(3).fill(null))
   ); // Team B
 
-
   const [activeTeamPopup, setActiveTeamPopup] = useState(null); // "A" or "B" or null
 
   const banSound = useRef(new Audio("/決定ボタンを押す52.mp3"));
@@ -136,7 +135,9 @@ const App = () => {
         // Typing phase
         if (displayTextRef.current.length < currentText.length) {
           // Add characters one by one
-          displayTextRef.current += currentText.charAt(displayTextRef.current.length);
+          displayTextRef.current += currentText.charAt(
+            displayTextRef.current.length
+          );
           setDisplayText(displayTextRef.current);
           typingRef.current = setTimeout(handleTyping, 150); // Typing speed
         }
@@ -304,11 +305,20 @@ const App = () => {
   };
 
   const playerImagesA = [
-    process.env.PUBLIC_URL + '/green.png',
-    process.env.PUBLIC_URL + '/silver.png',
-    process.env.PUBLIC_URL + '/haruka.png',
-    process.env.PUBLIC_URL + '/jun.png',
-    process.env.PUBLIC_URL + '/chelen.png',
+    process.env.PUBLIC_URL + "/red.png",
+    process.env.PUBLIC_URL + "/hibiki.png",
+    process.env.PUBLIC_URL + "/yuuki.png",
+    process.env.PUBLIC_URL + "/koki.png",
+    process.env.PUBLIC_URL + "/toya.png",
+    // Add paths for other players
+  ];
+
+  const playerImagesB = [
+    process.env.PUBLIC_URL + "/green.png",
+    process.env.PUBLIC_URL + "/silver.png",
+    process.env.PUBLIC_URL + "/haruka.png",
+    process.env.PUBLIC_URL + "/jun.png",
+    process.env.PUBLIC_URL + "/chelen.png",
     // Add paths for other players
   ];
 
@@ -365,60 +375,64 @@ const App = () => {
 
         {/* Team A Pick Section */}
         <div className="teama-pick">
-          {Array(5).fill(null).map((_, index) => (
-            <div
-              key={index}
-              className={`select pokemon ${expandedPlayerIndex === index ? "expand" : ""}`} // Apply the 'expand' class if it's the player's turn
-            >
-            <div className="pick-pokemon-image-container">
-              {teamA.picks[index] ? (
-                <img
-                  src={teamA.picks[index].imageUrl}
-                  alt={teamA.picks[index].name.English}
-                    className="preview-image"
-                />
-                ) : currentTeam === teamA &&
-                  currentAction === "PICK" &&
-                  selectedPokemon &&
-                  index === teamA.picks.length ? (
-                  <img
-                    src={selectedPokemon.imageUrl}
-                    alt={selectedPokemon.name.English}
-                    className="preview-image"
-                  />
-                ) : (
-                  <span>
-                    {pickOrderA[index]}
-                  </span> /* Display pick draft number */
-                )}
-              </div>
-              <div className="icon-container">
-                {Array(3)
-                  .fill(null)
-                  .map((_, iconIndex) => (
-                    <div
-                      key={iconIndex}
-                      className="icon"
-                      onClick={() => handleIconClick("A", index, iconIndex)}
-                    >
-                      <div className="icon-circle">
-                        {selectedItemsA[index][iconIndex] && (
-                          <img
-                            src={selectedItemsA[index][iconIndex].imageUrl}
-                            alt={
-                              selectedItemsA[index][iconIndex].name.English
-                            }
-                          />
-                        )}
+          {Array(5)
+            .fill(null)
+            .map((_, index) => (
+              <div
+                key={index}
+                className={`select pokemon ${
+                  expandedPlayerIndex === index ? "expand" : ""
+                }`} // Apply the 'expand' class if it's the player's turn
+              >
+                <div className="pick-pokemon-image-container">
+                  {teamA.picks[index] ? (
+                    <img
+                      src={teamA.picks[index].imageUrl}
+                      alt={teamA.picks[index].name.English}
+                      className="preview-image"
+                    />
+                  ) : currentTeam === teamA &&
+                    currentAction === "PICK" &&
+                    selectedPokemon &&
+                    index === teamA.picks.length ? (
+                    <img
+                      src={selectedPokemon.imageUrl}
+                      alt={selectedPokemon.name.English}
+                      className="preview-image"
+                    />
+                  ) : (
+                    <span>
+                      {pickOrderA[index]}
+                    </span> /* Display pick draft number */
+                  )}
+                </div>
+                <div className="icon-container">
+                  {Array(3)
+                    .fill(null)
+                    .map((_, iconIndex) => (
+                      <div
+                        key={iconIndex}
+                        className="icon"
+                        onClick={() => handleIconClick("A", index, iconIndex)}
+                      >
+                        <div className="icon-circle">
+                          {selectedItemsA[index][iconIndex] && (
+                            <img
+                              src={selectedItemsA[index][iconIndex].imageUrl}
+                              alt={
+                                selectedItemsA[index][iconIndex].name.English
+                              }
+                            />
+                          )}
+                        </div>
                       </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
+                <div className="player-imageA">
+                  <img src={playerImagesA[index]} alt={`Player ${index + 1}`} />
+                </div>
               </div>
-              <div className="player-image">
-                <img src={playerImagesA[index]} alt={`Player ${index + 1}`} />
-              </div>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
 
@@ -493,35 +507,43 @@ const App = () => {
 
         {/* Team B Pick Section */}
         <div className="teamb-pick">
-          {Array(5).fill(null).map((_, index) => (
-            <div
-              key={index}
-              className={`select pokemon ${expandedPlayerIndex === index ? "expand" : ""}`} // Apply the 'expand' class if it's the player's turn
-            >
-              <div className="player-name-container">
-                <span className="player-name">{playerNamesA[index]}</span>
-              </div>
+          {Array(5)
+            .fill(null)
+            .map((_, index) => (
+              <div
+                key={index}
+                className={`select pokemon ${
+                  expandedPlayerIndex === index ? "expand" : ""
+                }`} // Apply the 'expand' class if it's the player's turn
+              >
+                <div className="player-imageB">
+                  <img src={playerImagesB[index]} alt={`Player ${index + 1}`} />
+                </div>
 
-              <div className="icon-containerB">
-                {Array(3).fill(null).map((_, iconIndex) => (
-                  <div
-                    key={iconIndex}
-                    className="icon"
-                    onClick={() => handleIconClick("B", index, iconIndex)}
-                  >
-                    <div className="icon-circle">
-                      {selectedItemsB[index][iconIndex] && (
-                        <img
-                          src={selectedItemsB[index][iconIndex].imageUrl}
-                          alt={selectedItemsB[index][iconIndex].name.English}
-                          />
-                        )}
-                    </div>
-                  </div>
-                ))}
-              </div>
+                <div className="icon-containerB">
+                  {Array(3)
+                    .fill(null)
+                    .map((_, iconIndex) => (
+                      <div
+                        key={iconIndex}
+                        className="icon"
+                        onClick={() => handleIconClick("B", index, iconIndex)}
+                      >
+                        <div className="icon-circle">
+                          {selectedItemsB[index][iconIndex] && (
+                            <img
+                              src={selectedItemsB[index][iconIndex].imageUrl}
+                              alt={
+                                selectedItemsB[index][iconIndex].name.English
+                              }
+                            />
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                </div>
 
-              <div className="pick-pokemon-image-container">
+                <div className="pick-pokemon-image-container">
                   {teamB.picks[index] ? (
                     <img
                       src={teamB.picks[index].imageUrl}
@@ -542,12 +564,12 @@ const App = () => {
                       {pickOrderB[index]}
                     </span> /* Display pick draft number */
                   )}
+                </div>
               </div>
-             </div> 
-          ))}         
+            ))}
         </div>
-      </div>    
-      
+      </div>
+
       {/* Footer */}
       <div className="layout__footer">
         <button onClick={handleConfirmClick} disabled={!selectedPokemon}>
