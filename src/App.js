@@ -100,7 +100,6 @@ const App = () => {
   ); // Team B
 
   const [selectedBattleItemsA, setSelectedBattleItemsA] = useState(Array(5).fill(null)); // Array of 5 battle items for Team A
-  const [selectedBattleItemsB, setSelectedBattleItemsB] = useState(Array(5).fill(null)); // Array of 5 battle items for Team B
 
   // Handle selecting a battle item for a specific player
   const handleBattleItemSelect = (playerIndex, item) => {
@@ -590,8 +589,8 @@ const App = () => {
                   <div className="battle-item-circle" onClick={() => handlePopupOpen(index)}>
                     {selectedBattleItemsA[index] && (
                   <img
-                    src={selectedBattleItemsB[index].imageUrl}
-                    alt={selectedBattleItemsB[index].name}
+                    src={selectedBattleItemsA[index].imageUrl}
+                    alt={selectedBattleItemsA[index].name}
                     className="battle-item-selected"
                   />
                     )}
