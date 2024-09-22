@@ -100,25 +100,36 @@ const App = () => {
   ); // Team B
 
   const [selectedBattleItemsA, setSelectedBattleItemsA] = useState(Array(5).fill(null)); // Array of 5 battle items for Team A
+  const [selectedBattleItemsB, setSelectedBattleItemsB] = useState(Array(5).fill(null)); // Team B battle items
 
   // Handle selecting a battle item for a specific player
-  const handleBattleItemSelect = (playerIndex, item) => {
-    const updatedBattleItems = [...selectedBattleItemsA];
-    updatedBattleItems[playerIndex] = item;
-    setSelectedBattleItemsA(updatedBattleItems);
-
-    // Close the popup after selection
-    setPopupOpenIndex(null);
+  const handleBattleItemSelect = (playerIndex, item, team) => {
+    if (team === "A") {
+      const updatedBattleItems = [...selectedBattleItemsA];
+      updatedBattleItems[playerIndex] = item;
+      setSelectedBattleItemsA(updatedBattleItems);
+      setPopupOpenIndex(null); // Close Team A's popup
+    } else if (team === "B") {
+      const updatedBattleItems = [...selectedBattleItemsB];
+      updatedBattleItems[playerIndex] = item;
+      setSelectedBattleItemsB(updatedBattleItems);
+      setPopupOpenIndexB(null); // Close Team B's popup
+    }
   };
 
   const [popupOpenIndex, setPopupOpenIndex] = useState(null); // Track the open popup index
+  const [popupOpenIndexB, setPopupOpenIndexB] = useState(null); // Track the open popup index for Team B
 
   // Handle opening and closing of popups for a specific player
-  const handlePopupOpen = (playerIndex) => {
-    if (popupOpenIndex === playerIndex) {
-      setPopupOpenIndex(null); // Close the popup if it's already open
-    } else {
-      setPopupOpenIndex(playerIndex); // Open the popup for the clicked player
+  const handlePopupOpen = (team, playerIndex) => {
+    if (team === "A") {
+      // If Team B's popup is open, close it first and open Team A's popup
+      setPopupOpenIndexB(null);
+      setPopupOpenIndex(playerIndex === popupOpenIndex ? null : playerIndex);
+    } else if (team === "B") {
+      // If Team A's popup is open, close it first and open Team B's popup
+      setPopupOpenIndex(null);
+      setPopupOpenIndexB(playerIndex === popupOpenIndexB ? null : playerIndex);
     }
   };
 
@@ -472,7 +483,7 @@ const App = () => {
                 </div>
               ))}
               {/* Battle Item Circle for Team A */}
-              <div className="battle-item-circle" onClick={() => handlePopupOpen(index)}>
+              <div className="battle-item-circle" onClick={() => handlePopupOpen("A",index)}>
                 {selectedBattleItemsA[index] && (
                   <img
                     src={selectedBattleItemsA[index].imageUrl}
@@ -586,18 +597,18 @@ const App = () => {
 
                 <div className="icon-containerB">
                   {/* Battle Item Circle for Team B */}
-                  <div className="battle-item-circle" onClick={() => handlePopupOpen(index)}>
-                    {selectedBattleItemsA[index] && (
+                  <div className="battle-item-circle" onClick={() => handlePopupOpen("B", index)}>
+                    {selectedBattleItemsB[index] && (
                   <img
-                    src={selectedBattleItemsA[index].imageUrl}
-                    alt={selectedBattleItemsA[index].name}
+                    src={selectedBattleItemsB[index].imageUrl}
+                    alt={selectedBattleItemsB[index].name}
                     className="battle-item-selected"
                   />
                     )}
                   </div>
 
                   {/* Show the popup only for the currently selected player */}
-                  {popupOpenIndex === index && (
+                  {popupOpenIndexB === index && (
                     <BattleItemPopup
                       onSelect={(item) => handleBattleItemSelect(index, item, "B")} // Handle battle item selection for that player
                     />
