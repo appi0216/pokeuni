@@ -56,8 +56,14 @@ body::after {
   grid-column: 5 / 9;
   color: white;
   text-align: center;
-  padding: 20px;
-  font-size: 1rem; /* Default size */
+  padding: 10px;
+  font-size: 1vw; /* Default size */
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  font-size: 2vw; /* Default size */
 }
 
 /* Side Navigation */
@@ -66,11 +72,15 @@ body::after {
   align-items: center; /* Center content horizontally */
   grid-row: 1 / 4; /* Span across all rows */
   background-color: rgba(0, 0, 0, 0);
-  padding: 20px;
+  padding: 2vh;
   color: white;
   text-align: center;
   overflow-y: auto;
-  font-size: 1rem; /* Default size */
+  font-size: 1vw; /* Default size */
+  display: flex;
+  flex-direction: column; /* Flexboxで縦に並べる */
+  justify-content: flex-start; /* 上部から配置 */
+  align-items: center; /* 中央揃え */
 }
 
 .layout__sideNavi2 {
@@ -78,11 +88,15 @@ body::after {
   align-items: center; /* Center content horizontally */
   grid-row: 1 / 4; /* Span across all rows */
   background-color: rgba(0, 0, 0, 0);
-  padding: 20px;
+  padding: 2vh;
   color: white;
   text-align: center;
   overflow-y: auto;
-  font-size: 1rem; /* Default size */
+  font-size: 1vw; /* Default size */
+  display: flex;
+  flex-direction: column; /* Flexboxで縦に並べる */
+  justify-content: flex-start; /* 上部から配置 */
+  align-items: center; /* 中央揃え */
 }
 
 /* Flexbox layout for Team A and Team B's Ban sections */
@@ -92,13 +106,12 @@ body::after {
   justify-content: space-around; /* Distribute items evenly */
   align-items: center;
   padding: 10px;
-  margin-bottom: 10px;
 }
 
 .teama-pick, .teamb-pick {
   display: flex;
   flex-direction: column; /* Row-wise alignment for the bans/picks */
-  overflow: hidden; /* Prevent overflowing content */
+  overflow: auto; 
   width: 100%; /* Ensure the width is constrained within the parent container */
   max-width: 100%; /* Prevents child elements from exceeding the parent's width */
   box-sizing: border-box; /* Ensure padding and borders are included in the element's total width */
@@ -110,15 +123,16 @@ body::after {
   display: flex;
   justify-content: space-between; /* This aligns the image to the left and player name to the right */
   align-items: center;
-  margin: 10px 0; /* Space between the rows */
-  padding: 10px;
+  margin: 1vh 0; /* Space between the rows */
+  padding: 5px;
   background-color: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
   transition: width 0.5s ease; /* Smooth transition for the width */
-  width: 100%; /* Ensure select.pokemon takes full width of the parent container */
-  max-width: 100%; /* Prevent select.pokemon from exceeding the parent's width */
   box-sizing: border-box; /* Ensures padding and borders are included in the element's total width */
   position: relative; /* To allow absolute positioning of child elements */
+  height: 12vh; /* Adjust height dynamically based on viewport height */
+  min-height: 40px; /* Ensure a minimum height for very small screens */
+  overflow: visible; /* Prevents overflow of child elements */
 }
 
 /* Pokémon image container */
@@ -126,53 +140,53 @@ body::after {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 60px;
-  height: 60px;
-  margin: 5px;
+  width: 5vw;
+  aspect-ratio: 1 / 1; /* Ensures a 1:1 aspect ratio (square) */
+  height: 5vw;
+  margin: 2px;
   background-color: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
-
+  overflow: hidden; /* Prevents image overflow */
 }
-
 
 /* Pokémon image container */
 .pick-pokemon-image-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100px;
-  height: 100px;
-  margin: 5px;
+  width: 4vw;
+  aspect-ratio: 1 / 1; /* Ensures a 1:1 aspect ratio (square) */
+  height: 4vw;
+  margin: 2px;
   background-color: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
-
+  overflow: hidden; /* Prevents image overflow */
 }
 
 /* Icon container in the middle, centrally aligned */
 .icon-container {
   display: flex;
-  justify-content: left;
+  justify-content: center;
   align-items: center;
   flex-grow: 1; /* Automatically take up remaining space */
-  padding: 0 10px; /* Optional: add padding for better spacing */
-  height: 100px; /* Match height of the other elements */
-  gap: 10px; /* Ensure space between each circle */
+  padding: 0 5px; /* Optional: add padding for better spacing */
+  height: 5vh; /* Match height of the other elements */
+  gap: 5px; /* Ensure space between each circle */
 }
 
 .icon-containerB {
-
   display: flex;
-  justify-content: right;
+  justify-content: center;
   align-items: center;
   flex-grow: 1; /* Automatically take up remaining space */
-  padding: 0 10px; /* Optional: add padding for better spacing */
-  height: 100px; /* Match height of the other elements */
-  gap: 10px; /* Ensure space between each circle */
+  padding: 0 5px; /* Optional: add padding for better spacing */
+  height: 5vh; /* Match height of the other elements */
+  gap: 5px; /* Ensure space between each circle */
 }
 
 .icon-circle {
-  width: 36px; /* Adjust size */
-  height: 36px;
+  width: 2vw; /* Adjust size */
+  height: 2vw;
   border-radius: 50%; /* Makes it a circle */
   display: flex;
   justify-content: center;
@@ -192,26 +206,26 @@ body::after {
 .battleitem-popup {
   position: absolute;
   background-color: white;
-  padding: 20px;
+  padding: 2vh;
   border: 1px solid gray;
-  z-index: 100;
+  z-index: 1000;
 }
 
 .battleitem-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* 3 items per row */
-  gap: 10px;
+  gap: 1vw;
 }
 
 .battleitem-option {
-  width: 50px;
-  height: 50px;
+  width: 2vw;
+  height: 2vw;
   cursor: pointer;
 }
 
 .battle-item-circle {
-  width: 36px;
-  height: 36px;
+  width: 2vw;
+  height: 2vw;
   border-radius: 50%;
   background-color: lightgray;
   display: flex;
@@ -227,54 +241,25 @@ body::after {
 }
 
 /* Positioning player image in the bottom-right */
-.player-imageA {
+.player-imageA, .player-imageB {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 60px;
-  height: 60px;
-  margin-left: auto; /* Pushes the player image to the far right */
-}
-/* If needed, image inside player-image */
-.player-imageA img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Positioning player image in the bottom-right */
-.player-imageB {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 60px;
-  height: 60px;
-  margin-left: auto; /* Pushes the player image to the far right */
+  width: 3vw;
+  height: 3vw;
 }
 
 /* If needed, image inside player-image */
-.player-imageB img {
+.player-imageA img, .player-imageB img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-/* Player name container */
-.player-name-container {
-  text-align: right;
-  margin-top: 5px;
-}
-
-.player-name {
-  color: white;
-  font-size: 1rem;
-  text-align: center;
 }
 
 /* Main Content */
 .layout__mainContent {
   grid-column: 4 / 10;
-  padding: 2rem;
+  padding: 2vw;
   overflow-y: auto;
   max-height: calc(100vh - 160px); /* Adjust to prevent overlap with footer */
   box-sizing: flex-end;
@@ -328,14 +313,14 @@ body::after {
 /* Footer */
 .layout__footer {
   grid-column: 6 / 8;
-  padding: 10px;
+  padding: 5px;
   text-align: center;
   position: relative;
 }
 
 /* Pokemon Images */
 .pokemon-selection img {
-  width: 5vw;
+  width: 4vw;
   height: auto;
   margin: 0px;
   cursor: pointer;
@@ -351,7 +336,7 @@ body::after {
 }
 
 .pick-preview-image {
-  width: 5vw;
+  width: 4vw;
   height: auto;
   margin: 0px;
   cursor: pointer;
@@ -363,11 +348,11 @@ button {
   background-color: #61dafb;
   color: white;
   border: none;
-  padding: 1rem 2rem;
-  margin: 0.5rem;
+  padding: 1vh 2vw;
+  margin: 0.5vh;
   cursor: pointer;
   border-radius: 5px;
-  font-size: 1.2rem;
+  font-size: 1.2vw;
   transition: font-size 0.3s ease, padding 0.3s ease;
 }
 
@@ -387,22 +372,22 @@ button:active {
 @media (max-width: 768px) {
 
   .layout__header {
-    grid-column: 4 / 10;
-    font-size: 0.5rem; /* Smaller text size for mobile */
+    grid-column: 6 / 7;
+    font-size: 0.6rem; /* Smaller text size for mobile */
   }
 
   .layout__sideNavi1 {
-    grid-column: 1 / 4;
+    grid-column: 1 / 5;
     font-size: 0.3rem; /* Smaller text size for mobile */
   }
   
   .layout__sideNavi2 {
-    grid-column: 10 / 13;
+    grid-column: 9 / 13;
     font-size: 0.3rem; /* Smaller text size for mobile */
   }
 
   .layout__mainContent {
-    grid-column: 4 / 10;
+    grid-column: 5 / 9;
   }
 
   .pokemon-selection img,
@@ -412,6 +397,7 @@ button:active {
 
   .layout__footer {
     grid-column: 6 / 7;
+    font-size: 0.3rem; /* Smaller text size for mobile */
   }
 
 }
@@ -420,10 +406,14 @@ button:active {
 @media (min-width: 768px) and (max-width: 1200px) {
 
   .layout__header {
-    grid-column: 4 / 10;
+    grid-column: 6 / 8;
     font-size: 0.5rem; /* Smaller text size for mobile */
   }
-
+  
+  .teama-ban {
+    grid-column: 4 / 6;
+  }
+  
   .layout__sideNavi1 {
     grid-column: 1 / 4;
     font-size: 0.3rem; /* Smaller text size for mobile */
