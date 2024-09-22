@@ -100,6 +100,7 @@ const App = () => {
   ); // Team B
 
   const [selectedBattleItemsA, setSelectedBattleItemsA] = useState(Array(5).fill(null)); // Array of 5 battle items for Team A
+  const [selectedBattleItemsB, setSelectedBattleItemsB] = useState(Array(5).fill(null)); // Array of 5 battle items for Team B
 
   // Handle selecting a battle item for a specific player
   const handleBattleItemSelect = (playerIndex, item) => {
@@ -485,7 +486,7 @@ const App = () => {
               {/* Show the popup only for the currently selected player */}
               {popupOpenIndex === index && (
                 <BattleItemPopup
-                  onSelect={(item) => handleBattleItemSelect(index, item)} // Handle battle item selection for that player
+                  onSelect={(item) => handleBattleItemSelect(index, item,"A")} // Handle battle item selection for that player
                 />
               )}
             </div>
@@ -585,6 +586,23 @@ const App = () => {
                 </div>
 
                 <div className="icon-containerB">
+                  {/* Battle Item Circle for Team B */}
+                  <div className="battle-item-circle" onClick={() => handlePopupOpen(index)}>
+                    {selectedBattleItemsA[index] && (
+                  <img
+                    src={selectedBattleItemsB[index].imageUrl}
+                    alt={selectedBattleItemsB[index].name}
+                    className="battle-item-selected"
+                  />
+                    )}
+                  </div>
+
+                  {/* Show the popup only for the currently selected player */}
+                  {popupOpenIndex === index && (
+                    <BattleItemPopup
+                      onSelect={(item) => handleBattleItemSelect(index, item, "B")} // Handle battle item selection for that player
+                    />
+                  )}
                   {Array(3)
                     .fill(null)
                     .map((_, iconIndex) => (
