@@ -110,7 +110,7 @@ body::after {
   display: flex;
   justify-content: space-between; /* This aligns the image to the left and player name to the right */
   align-items: center;
-  margin: 5px 0; /* Space between the rows */
+  margin: 10px 0; /* Space between the rows */
   padding: 10px;
   background-color: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -156,6 +156,7 @@ body::after {
   flex-grow: 1; /* Automatically take up remaining space */
   padding: 0 10px; /* Optional: add padding for better spacing */
   height: 100px; /* Match height of the other elements */
+  gap: 10px; /* Ensure space between each circle */
 }
 
 .icon-containerB {
@@ -166,6 +167,7 @@ body::after {
   flex-grow: 1; /* Automatically take up remaining space */
   padding: 0 10px; /* Optional: add padding for better spacing */
   height: 100px; /* Match height of the other elements */
+  gap: 10px; /* Ensure space between each circle */
 }
 
 .icon-circle {
@@ -188,8 +190,8 @@ body::after {
 
 /* Circle for battle items */
 .battle-item-circle {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background-color: lightgray;
   display: flex;
@@ -217,8 +219,8 @@ body::after {
 
 /* Individual battle item image in the popup */
 .battle-item-image {
-  width: 50px;
-  height: 50px;
+  width: 36px;
+  height: 36px;
   cursor: pointer;
   border: 1px solid #ccc;
   padding: 5px;
@@ -235,13 +237,13 @@ body::after {
 
 /* Positioning player image in the bottom-right */
 .player-imageA {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 60px;  /* Adjust size as needed */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
   height: 60px;
+  margin-left: auto; /* Pushes the player image to the far right */
 }
-
 /* If needed, image inside player-image */
 .player-imageA img {
   width: 100%;
@@ -251,11 +253,12 @@ body::after {
 
 /* Positioning player image in the bottom-right */
 .player-imageB {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 60px;  /* Adjust size as needed */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
   height: 60px;
+  margin-left: auto; /* Pushes the player image to the far right */
 }
 
 /* If needed, image inside player-image */

@@ -462,12 +462,9 @@ const App = () => {
                   </div>
                 </div>
               ))}
-          </div>
-
-          {/* BattleItemPopup and selected battle item */}
-          <div className="battle-item-section">
-            <BattleItemPopup onSelect={(item) => setSelectedBattleItem(item)} />
-            <div className="battle-item-display">
+            {/* BattleItemPopup and selected battle item */}
+            <div className="battle-item-section">
+              <BattleItemPopup onSelect={(item) => setSelectedBattleItem(item)} />
               {selectedBattleItem && (
                 <img
                   src={selectedBattleItem.imageUrl}
