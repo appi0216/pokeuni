@@ -323,6 +323,43 @@ const App = () => {
     // Add paths for other players
   ];
 
+  const [selectedBattleItem, setSelectedBattleItem] = useState(null);
+  const BattleItemPopup = ({ onSelect }) => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    const handleIconClick = () => {
+      setIsOpen(!isOpen); // Toggle popup
+    };
+
+    const handleItemClick = (item) => {
+      onSelect(item);
+      setIsOpen(false); // Close popup after selecting
+    };
+
+    return (
+      <div className="battle-item-container">
+        <div className="battle-item-circle" onClick={handleIconClick}>
+          {/* Circle for battle items */}
+        </div>
+
+        {isOpen && (
+          <div className="battle-item-popup">
+            {battleItems.map((item, index) => (
+              <img
+                key={index}
+                src={item.imageUrl}
+                alt={item.name}
+                className="battle-item-image"
+                onClick={() => handleItemClick(item)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+
   return (
     <div className="container">
       {/* Header */}
@@ -385,57 +422,70 @@ const App = () => {
                   expandedPlayerIndex === index ? "expand" : ""
                 }`} // Apply the 'expand' class if it's the player's turn
               >
-                <div className="pick-pokemon-image-container">
-                  {teamA.picks[index] ? (
-                    <img
-                      src={teamA.picks[index].imageUrl}
-                      alt={teamA.picks[index].name.English}
-                      className="pick-preview-image"
-                    />
-                  ) : currentTeam === teamA &&
-                    currentAction === "PICK" &&
-                    selectedPokemon &&
-                    index === teamA.picks.length ? (
-                    <img
-                      src={selectedPokemon.imageUrl}
-                      alt={selectedPokemon.name.English}
-                      className="pick-preview-image"
-                    />
-                  ) : (
-                    <span>
-                      {pickOrderA[index]}
-                    </span> /* Display pick draft number */
-                  )}
+                          <div className="pick-pokemon-image-container">
+            {teamA.picks[index] ? (
+              <img
+                src={teamA.picks[index].imageUrl}
+                alt={teamA.picks[index].name.English}
+                className="pick-preview-image"
+              />
+            ) : currentTeam === teamA &&
+              currentAction === "PICK" &&
+              selectedPokemon &&
+              index === teamA.picks.length ? (
+              <img
+                src={selectedPokemon.imageUrl}
+                alt={selectedPokemon.name.English}
+                className="pick-preview-image"
+              />
+            ) : (
+              <span>{pickOrderA[index]}</span> /* Display pick draft number */
+            )}
+          </div>
+
+          <div className="icon-container">
+            {Array(3)
+              .fill(null)
+              .map((_, iconIndex) => (
+                <div
+                  key={iconIndex}
+                  className="icon"
+                  onClick={() => handleIconClick("A", index, iconIndex)}
+                >
+                  <div className="icon-circle">
+                    {selectedItemsA[index][iconIndex] && (
+                      <img
+                        src={selectedItemsA[index][iconIndex].imageUrl}
+                        alt={selectedItemsA[index][iconIndex].name.English}
+                      />
+                    )}
+                  </div>
                 </div>
-                <div className="icon-container">
-                  {Array(3)
-                    .fill(null)
-                    .map((_, iconIndex) => (
-                      <div
-                        key={iconIndex}
-                        className="icon"
-                        onClick={() => handleIconClick("A", index, iconIndex)}
-                      >
-                        <div className="icon-circle">
-                          {selectedItemsA[index][iconIndex] && (
-                            <img
-                              src={selectedItemsA[index][iconIndex].imageUrl}
-                              alt={
-                                selectedItemsA[index][iconIndex].name.English
-                              }
-                            />
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                </div>
-                <div className="player-imageA">
-                  <img src={playerImagesA[index]} alt={`Player ${index + 1}`} />
-                </div>
-              </div>
-            ))}
+              ))}
+          </div>
+
+          {/* BattleItemPopup and selected battle item */}
+          <div className="battle-item-section">
+            <BattleItemPopup onSelect={(item) => setSelectedBattleItem(item)} />
+            <div className="battle-item-display">
+              {selectedBattleItem && (
+                <img
+                  src={selectedBattleItem.imageUrl}
+                  alt={selectedBattleItem.name}
+                  className="battle-item-selected"
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Player image */}
+          <div className="player-imageA">
+            <img src={playerImagesA[index]} alt={`Player ${index + 1}`} />
+          </div>
         </div>
-      </div>
+      ))}
+  </div>
+</div>
 
       {/* Main Content */}
       <div className="layout__mainContent">
