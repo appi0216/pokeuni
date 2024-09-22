@@ -99,13 +99,27 @@ const App = () => {
     Array(5).fill(Array(3).fill(null))
   ); // Team B
 
-  const [selectedBattleItemsA, setSelectedBattleItemsA] = useState(Array(5).fill(null));
-  const [popupOpen, setPopupOpen] = useState(false); // Define popupOpen state
+  const [selectedBattleItemsA, setSelectedBattleItemsA] = useState(Array(5).fill(null)); // Array of 5 battle items for Team A
 
+  // Handle selecting a battle item for a specific player
   const handleBattleItemSelect = (playerIndex, item) => {
     const updatedBattleItems = [...selectedBattleItemsA];
     updatedBattleItems[playerIndex] = item;
     setSelectedBattleItemsA(updatedBattleItems);
+
+    // Close the popup after selection
+    setPopupOpenIndex(null);
+  };
+
+  const [popupOpenIndex, setPopupOpenIndex] = useState(null); // Track the open popup index
+
+  // Handle opening and closing of popups for a specific player
+  const handlePopupOpen = (playerIndex) => {
+    if (popupOpenIndex === playerIndex) {
+      setPopupOpenIndex(null); // Close the popup if it's already open
+    } else {
+      setPopupOpenIndex(playerIndex); // Open the popup for the clicked player
+    }
   };
 
   const [activeTeamPopup, setActiveTeamPopup] = useState(null); // "A" or "B" or null
@@ -331,7 +345,7 @@ const App = () => {
     process.env.PUBLIC_URL + "/chelen.png",
     // Add paths for other players
   ];
-  
+
   const BattleItemPopup = ({ onSelect }) => {
     const handleItemClick = (item) => {
       onSelect(item); // Trigger onSelect when an item is clicked
@@ -457,26 +471,25 @@ const App = () => {
                   </div>
                 </div>
               ))}
-            {/* Battle Item Circle */}
-            <div className="battle-item-circle" onClick={() => setPopupOpen(true)}>
-              {selectedBattleItemsA[index] && (
-                <img
-                  src={selectedBattleItemsA[index].imageUrl}
-                  alt={selectedBattleItemsA[index].name}
-                  className="battle-item-selected"
+              {/* Battle Item Circle for Team A */}
+              <div className="battle-item-circle" onClick={() => handlePopupOpen(index)}>
+                {selectedBattleItemsA[index] && (
+                  <img
+                    src={selectedBattleItemsA[index].imageUrl}
+                    alt={selectedBattleItemsA[index].name}
+                    className="battle-item-selected"
+                  />
+                )}
+              </div>
+
+              {/* Show the popup only for the currently selected player */}
+              {popupOpenIndex === index && (
+                <BattleItemPopup
+                  onSelect={(item) => handleBattleItemSelect(index, item)} // Handle battle item selection for that player
                 />
               )}
             </div>
 
-            {popupOpen && (
-              <BattleItemPopup
-                onSelect={(item) => {
-                  handleBattleItemSelect(index, item);
-                  setPopupOpen(false); // Close popup after selection
-                }}
-              />
-            )}
-          </div>
 
           {/* Player image */}
           <div className="player-imageA">
