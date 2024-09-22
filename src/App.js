@@ -99,6 +99,15 @@ const App = () => {
     Array(5).fill(Array(3).fill(null))
   ); // Team B
 
+  const [selectedBattleItemsA, setSelectedBattleItemsA] = useState(Array(5).fill(null));
+  const [popupOpen, setPopupOpen] = useState(false); // Define popupOpen state
+
+  const handleBattleItemSelect = (playerIndex, item) => {
+    const updatedBattleItems = [...selectedBattleItemsA];
+    updatedBattleItems[playerIndex] = item;
+    setSelectedBattleItemsA(updatedBattleItems);
+  };
+
   const [activeTeamPopup, setActiveTeamPopup] = useState(null); // "A" or "B" or null
 
   const banSound = useRef(new Audio("/決定ボタンを押す52.mp3"));
@@ -322,39 +331,25 @@ const App = () => {
     process.env.PUBLIC_URL + "/chelen.png",
     // Add paths for other players
   ];
-
-  const [selectedBattleItem, setSelectedBattleItem] = useState(null);
+  
   const BattleItemPopup = ({ onSelect }) => {
-    const [isOpen, setIsOpen] = useState(false);
-
-    const handleIconClick = () => {
-      setIsOpen(!isOpen); // Toggle popup
-    };
-
     const handleItemClick = (item) => {
-      onSelect(item);
-      setIsOpen(false); // Close popup after selecting
+      onSelect(item); // Trigger onSelect when an item is clicked
     };
-
+  
     return (
-      <div className="battle-item-container">
-        <div className="battle-item-circle" onClick={handleIconClick}>
-          {/* Circle for battle items */}
+      <div className="battleitem-popup">
+        <div className="battleitem-grid">
+          {battleItems.map((item) => (
+            <img
+              key={item.id}
+              src={item.imageUrl}
+              alt={item.name}
+              className="battleitem-option"
+              onClick={() => handleItemClick(item)}
+            />
+          ))}
         </div>
-
-        {isOpen && (
-          <div className="battle-item-popup">
-            {battleItems.map((item, index) => (
-              <img
-                key={index}
-                src={item.imageUrl}
-                alt={item.name}
-                className="battle-item-image"
-                onClick={() => handleItemClick(item)}
-              />
-            ))}
-          </div>
-        )}
       </div>
     );
   };
@@ -462,17 +457,25 @@ const App = () => {
                   </div>
                 </div>
               ))}
-            {/* BattleItemPopup and selected battle item */}
-            <div className="battle-item-section">
-              <BattleItemPopup onSelect={(item) => setSelectedBattleItem(item)} />
-              {selectedBattleItem && (
+            {/* Battle Item Circle */}
+            <div className="battle-item-circle" onClick={() => setPopupOpen(true)}>
+              {selectedBattleItemsA[index] && (
                 <img
-                  src={selectedBattleItem.imageUrl}
-                  alt={selectedBattleItem.name}
+                  src={selectedBattleItemsA[index].imageUrl}
+                  alt={selectedBattleItemsA[index].name}
                   className="battle-item-selected"
                 />
               )}
             </div>
+
+            {popupOpen && (
+              <BattleItemPopup
+                onSelect={(item) => {
+                  handleBattleItemSelect(index, item);
+                  setPopupOpen(false); // Close popup after selection
+                }}
+              />
+            )}
           </div>
 
           {/* Player image */}
