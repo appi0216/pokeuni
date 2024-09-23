@@ -45,7 +45,7 @@ body::after {
   width: 100%;
   max-width: 1920px;
   margin: 0 auto;
-  height: 100vh;
+  height: 100svh;
   grid-template-rows: auto 1fr auto;
   position: relative;
   z-index: 2;
