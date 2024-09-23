@@ -167,34 +167,43 @@ const App = () => {
   useEffect(() => {
     const handleTyping = () => {
       if (!isBackspacing) {
-        // Typing phase
+        // Typing phase: add characters one by one
         if (displayTextRef.current.length < currentText.length) {
-          // Add characters one by one
-          displayTextRef.current += currentText.charAt(
-            displayTextRef.current.length
-          );
+          displayTextRef.current += currentText.charAt(displayTextRef.current.length);
           setDisplayText(displayTextRef.current);
-          typingRef.current = setTimeout(handleTyping, 150); // Typing speed
+          typingRef.current = setTimeout(handleTyping, 100); // Typing speed
         }
       } else {
-        // Backspacing phase
+        // Backspacing phase: remove characters one by one
         if (displayTextRef.current.length > 0) {
-          // Remove characters one by one
           displayTextRef.current = displayTextRef.current.slice(0, -1);
           setDisplayText(displayTextRef.current);
-          typingRef.current = setTimeout(handleTyping, 100); // Backspacing speed
+          typingRef.current = setTimeout(handleTyping, 50); // Backspacing speed
         } else {
           // Once backspacing is done, start typing the new phase text
           setIsBackspacing(false);
         }
       }
     };
-
+  
     handleTyping();
-
+  
     return () => clearTimeout(typingRef.current);
   }, [isBackspacing, currentText]);
 
+  const getPhaseText = (teamName, action) => {
+    if (action === "BAN") {
+      return `${teamName} - 使用禁止ポケモンを選択中`; // Ban phase message
+    } else if (action === "PICK") {
+      const currentPlayerIndex = teamName === "Team A" ? teamA.picks.length : teamB.picks.length;
+      const playerName = teamName === "Team A" 
+        ? `Player ${currentPlayerIndex + 1}` // Player index for Team A
+        : `Player ${currentPlayerIndex + 1}`; // Player index for Team B
+      return `${teamName} ${playerName} - 使用ポケモンを選択中`; // Pick phase message
+    }
+    return ""; // Default case
+  };
+  
   //タイプ変更
   const handleTypeChange = (event) => {
     setSelectedType(event.target.value);
@@ -234,29 +243,45 @@ const App = () => {
     }
   };
 
-  // Handle item selection for both teams
-  const handleItemSelect = (team, item) => {
-    if (team === "A") {
-      const updatedItems = selectedItemsA.map((playerItems, index) =>
-        index === selectedIconA.playerIndex
-          ? playerItems.map((icon, i) =>
-              i === selectedIconA.iconIndex ? item : icon
-            )
-          : playerItems
-      );
-      setSelectedItemsA(updatedItems);
-    } else {
-      const updatedItems = selectedItemsB.map((playerItems, index) =>
-        index === selectedIconB.playerIndex
-          ? playerItems.map((icon, i) =>
-              i === selectedIconB.iconIndex ? item : icon
-            )
-          : playerItems
-      );
-      setSelectedItemsB(updatedItems);
+  // Handle item selection for both teams with validation to ensure no duplicates
+const handleItemSelect = (team, item) => {
+  if (team === "A") {
+    const playerItems = selectedItemsA[selectedIconA.playerIndex];
+
+    // Check if the item is already selected
+    if (playerItems.includes(item)) {
+      alert("This item has already been selected. Please choose a different item.");
+      return;
     }
-    setActiveTeamPopup(null);
-  };
+
+    const updatedItems = selectedItemsA.map((playerItems, index) =>
+      index === selectedIconA.playerIndex
+        ? playerItems.map((icon, i) =>
+            i === selectedIconA.iconIndex ? item : icon
+          )
+        : playerItems
+    );
+    setSelectedItemsA(updatedItems);
+  } else {
+    const playerItems = selectedItemsB[selectedIconB.playerIndex];
+
+    // Check if the item is already selected
+    if (playerItems.includes(item)) {
+      alert("This item has already been selected. Please choose a different item.");
+      return;
+    }
+
+    const updatedItems = selectedItemsB.map((playerItems, index) =>
+      index === selectedIconB.playerIndex
+        ? playerItems.map((icon, i) =>
+            i === selectedIconB.iconIndex ? item : icon
+          )
+        : playerItems
+    );
+    setSelectedItemsB(updatedItems);
+  }
+  setActiveTeamPopup(null);
+};
 
   const handleConfirmClick = () => {
     if (selectedPokemon) {
@@ -287,10 +312,20 @@ const App = () => {
     const nextIndex = draftIndex + step;
     if (nextIndex >= 0 && nextIndex < default_draft.length) {
       setDraftIndex(nextIndex);
-      setCurrentTeam(default_draft[nextIndex][0]);
-      setCurrentAction(default_draft[nextIndex][1]);
+      const team = default_draft[nextIndex][0]; // Current team (Team A or Team B)
+      const action = default_draft[nextIndex][1]; // Action (BAN or PICK)
+      const teamName = team === teamA ? "Team A" : "Team B"; // Get team name
+      const nextPhaseText = getPhaseText(teamName, action); // Generate the phase text
+  
+      setCurrentTeam(team);
+      setCurrentAction(action);
+      
+      // Trigger backspacing before typing the new phase text
+      setIsBackspacing(true);
+      setCurrentText(nextPhaseText);
     } else {
       setDraftComplete(true);
+      setCurrentText("ドラフトは完了しました。");
     }
   };
 
@@ -387,7 +422,7 @@ const App = () => {
         <h3>
           {draftComplete
             ? "ドラフトは完了しました。"
-            : `現在のフェーズ: ${displayText}`}
+            : displayText} {/* Just display `displayText` here */}
         </h3>
         <div className="dropdown">
           <select onChange={handleTypeChange} value={selectedType}>
