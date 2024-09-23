@@ -99,6 +99,73 @@ const App = () => {
     Array(5).fill(Array(3).fill(null))
   ); // Team B
 
+  const [selectedItems, setSelectedItems] = useState([]); // State to track selected items
+
+  const handleItemClick = (item) => {
+    if (selectedItems.includes(item)) {
+      // Item is already selected: remove it
+      const updatedItems = selectedItems.filter((i) => i !== item);
+      setSelectedItems(updatedItems);
+  
+      // Reflect the real-time changes in icon-circles
+      if (activeTeamPopup === "A") {
+        const playerIndex = selectedIconA.playerIndex;
+        const realTimeItems = selectedItemsA.map((playerItems, index) =>
+          index === playerIndex ? updatedItems : playerItems
+        );
+        setSelectedItemsA(realTimeItems);
+      } else {
+        const playerIndex = selectedIconB.playerIndex;
+        const realTimeItems = selectedItemsB.map((playerItems, index) =>
+          index === playerIndex ? updatedItems : playerItems
+        );
+        setSelectedItemsB(realTimeItems);
+      }
+    } else if (selectedItems.length < 3) {
+      // Item is not selected and there are fewer than 3 items selected
+      const updatedItems = [...selectedItems, item];
+      setSelectedItems(updatedItems);
+  
+      // Reflect the item selection in real-time
+      if (activeTeamPopup === "A") {
+        const playerIndex = selectedIconA.playerIndex;
+        const realTimeItems = selectedItemsA.map((playerItems, index) =>
+          index === playerIndex ? updatedItems : playerItems
+        );
+        setSelectedItemsA(realTimeItems);
+      } else {
+        const playerIndex = selectedIconB.playerIndex;
+        const realTimeItems = selectedItemsB.map((playerItems, index) =>
+          index === playerIndex ? updatedItems : playerItems
+        );
+        setSelectedItemsB(realTimeItems);
+      }
+  
+      // Automatically confirm when 3 items are selected
+      if (updatedItems.length === 3) {
+        if (activeTeamPopup === "A") {
+          handleItemSelect("A", updatedItems);
+        } else {
+          handleItemSelect("B", updatedItems);
+        }
+        setSelectedItems([]); // Reset after confirmation
+      }
+    }
+  };
+
+  const handleConfirmSelection = () => {
+  if (selectedItems.length === 3) {
+    if (activeTeamPopup === "A") {
+      handleItemSelect("A", selectedItems);
+    } else {
+      handleItemSelect("B", selectedItems);
+    }
+    setSelectedItems([]); // Reset selected items after confirmation
+  } else {
+    alert("Please select exactly 3 items.");
+  }
+  };
+
   const [selectedBattleItemsA, setSelectedBattleItemsA] = useState(Array(5).fill(null)); // Array of 5 battle items for Team A
   const [selectedBattleItemsB, setSelectedBattleItemsB] = useState(Array(5).fill(null)); // Team B battle items
 
@@ -106,14 +173,14 @@ const App = () => {
   const handleBattleItemSelect = (playerIndex, item, team) => {
     if (team === "A") {
       const updatedBattleItems = [...selectedBattleItemsA];
-      updatedBattleItems[playerIndex] = item;
+      updatedBattleItems[playerIndex] = item; // Update the selected item
       setSelectedBattleItemsA(updatedBattleItems);
-      setPopupOpenIndex(null); // Close Team A's popup
+      setPopupOpenIndex(null); // Close the popup
     } else if (team === "B") {
       const updatedBattleItems = [...selectedBattleItemsB];
-      updatedBattleItems[playerIndex] = item;
+      updatedBattleItems[playerIndex] = item; // Update the selected item
       setSelectedBattleItemsB(updatedBattleItems);
-      setPopupOpenIndexB(null); // Close Team B's popup
+      setPopupOpenIndexB(null); // Close the popup
     }
   };
 
@@ -123,13 +190,11 @@ const App = () => {
   // Handle opening and closing of popups for a specific player
   const handlePopupOpen = (team, playerIndex) => {
     if (team === "A") {
-      // If Team B's popup is open, close it first and open Team A's popup
-      setPopupOpenIndexB(null);
-      setPopupOpenIndex(playerIndex === popupOpenIndex ? null : playerIndex);
+      setPopupOpenIndexB(null); // Close Team B's popup if it's open
+      setPopupOpenIndex(playerIndex === popupOpenIndex ? null : playerIndex); // Toggle the popup for Team A
     } else if (team === "B") {
-      // If Team A's popup is open, close it first and open Team B's popup
-      setPopupOpenIndex(null);
-      setPopupOpenIndexB(playerIndex === popupOpenIndexB ? null : playerIndex);
+      setPopupOpenIndex(null); // Close Team A's popup if it's open
+      setPopupOpenIndexB(playerIndex === popupOpenIndexB ? null : playerIndex); // Toggle the popup for Team B
     }
   };
 
@@ -229,59 +294,32 @@ const App = () => {
   };
 
   // Handle icon click for both teams
-  const handleIconClick = (team, playerIndex, iconIndex) => {
-    if (activeTeamPopup !== null) {
-      // If a popup is already active, don't allow another one to open
-      return;
-    }
+  const handleIconClick = (team, playerIndex) => {
+    if (activeTeamPopup !== null) return; // Prevent multiple popups
     if (team === "A") {
-      setSelectedIconA({ playerIndex, iconIndex });
-      setActiveTeamPopup("A"); // Open Team A's popup
+      setSelectedIconA({ playerIndex });
+      setActiveTeamPopup("A");
     } else {
-      setSelectedIconB({ playerIndex, iconIndex });
-      setActiveTeamPopup("B"); // Open Team B's popup
+      setSelectedIconB({ playerIndex });
+      setActiveTeamPopup("B");
     }
   };
 
   // Handle item selection for both teams with validation to ensure no duplicates
-const handleItemSelect = (team, item) => {
-  if (team === "A") {
-    const playerItems = selectedItemsA[selectedIconA.playerIndex];
-
-    // Check if the item is already selected
-    if (playerItems.includes(item)) {
-      alert("This item has already been selected. Please choose a different item.");
-      return;
+  const handleItemSelect = (team, items) => {
+    if (team === "A") {
+      const updatedItems = selectedItemsA.map((playerItems, index) =>
+        index === selectedIconA.playerIndex ? items : playerItems
+      );
+      setSelectedItemsA(updatedItems);
+    } else {
+      const updatedItems = selectedItemsB.map((playerItems, index) =>
+        index === selectedIconB.playerIndex ? items : playerItems
+      );
+      setSelectedItemsB(updatedItems);
     }
-
-    const updatedItems = selectedItemsA.map((playerItems, index) =>
-      index === selectedIconA.playerIndex
-        ? playerItems.map((icon, i) =>
-            i === selectedIconA.iconIndex ? item : icon
-          )
-        : playerItems
-    );
-    setSelectedItemsA(updatedItems);
-  } else {
-    const playerItems = selectedItemsB[selectedIconB.playerIndex];
-
-    // Check if the item is already selected
-    if (playerItems.includes(item)) {
-      alert("This item has already been selected. Please choose a different item.");
-      return;
-    }
-
-    const updatedItems = selectedItemsB.map((playerItems, index) =>
-      index === selectedIconB.playerIndex
-        ? playerItems.map((icon, i) =>
-            i === selectedIconB.iconIndex ? item : icon
-          )
-        : playerItems
-    );
-    setSelectedItemsB(updatedItems);
-  }
-  setActiveTeamPopup(null);
-};
+    setActiveTeamPopup(null); // Close the popup automatically
+  };
 
   const handleConfirmClick = () => {
     if (selectedPokemon) {
@@ -397,33 +435,18 @@ const handleItemSelect = (team, item) => {
       onSelect(item); // Trigger onSelect when an item is clicked
     };
   
-    return (
-      <div className="battleitem-popup">
-        <div className="battleitem-grid">
-          {battleItems.map((item) => (
-            <img
-              key={item.id}
-              src={item.imageUrl}
-              alt={item.name}
-              className="battleitem-option"
-              onClick={() => handleItemClick(item)}
-            />
-          ))}
-        </div>
-      </div>
-    );
-  };
+  };   
 
 
   return (
     <div className="container">
       {/* Header */}
       <div className="layout__header">
-        <h3>
+        <h1>
           {draftComplete
             ? "ドラフトは完了しました。"
             : displayText} {/* Just display `displayText` here */}
-        </h3>
+        </h1>
         <div className="dropdown">
           <select onChange={handleTypeChange} value={selectedType}>
             <option value="すべて">すべて</option>
@@ -436,8 +459,8 @@ const handleItemSelect = (team, item) => {
         </div>
       </div>
 
-      {/* Side Navi 1 - Team A */}
-      <div className="layout__sideNavi1">
+    {/* Side Navi 1 - Team A */}
+    <div className="layout__sideNavi1">
         {/* Team A Ban Section */}
         <div className="teama-ban">
           {Array(2)
@@ -466,8 +489,8 @@ const handleItemSelect = (team, item) => {
             ))}
         </div>
 
-        {/* Team A Pick Section */}
-        <div className="teama-pick">
+    {/* Team A Pick Section */}
+    <div className="teama-pick">
           {Array(5)
             .fill(null)
             .map((_, index) => (
@@ -498,7 +521,7 @@ const handleItemSelect = (team, item) => {
             )}
           </div>
 
-          <div className="icon-container">
+    <div className="icon-container">
             {Array(3)
               .fill(null)
               .map((_, iconIndex) => (
@@ -546,7 +569,7 @@ const handleItemSelect = (team, item) => {
   </div>
 </div>
 
-      {/* Main Content */}
+    {/* Main Content */}
       <div className="layout__mainContent">
         <div className="pokemon-selection">
           {filteredPokemonList.map((pokemon) => (
@@ -572,21 +595,70 @@ const handleItemSelect = (team, item) => {
       {activeTeamPopup && (
         <div className="popup-overlay">
           <div className="popup-content">
-            {heldItems.map((item, index) => (
-              <div
-                key={index}
-                className="popup-item"
-                onClick={() => handleItemSelect(activeTeamPopup, item)}
-              >
-                <img src={item.imageUrl} alt={item.name.English} />
-              </div>
-            ))}
+            <h2>Select 3 Held Items</h2>
+            <div className="helditem-grid">
+              {heldItems.map((item) => {
+                const itemIndex = selectedItems.indexOf(item); // Get the item's index in the selectedItems array
+                return (
+                  <div key={item.id} className="helditem-option-container">
+                    <img
+                      src={item.imageUrl}
+                      alt={item.name.English}
+                      className={`helditem-option ${itemIndex !== -1 ? "selected" : ""}`}
+                      onClick={() => handleItemClick(item)}
+                    />
+                    {itemIndex !== -1 && (
+                      <div className="selected-number">
+                        {itemIndex + 1} {/* Display the selection order */}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       )}
 
-      {/* Side Navi 2 - Team B */}
-      <div className="layout__sideNavi2">
+      {popupOpenIndex !== null && (
+        <div className="battleitem-overlay">
+          <div className="battleitem-popup">
+            <div className="battleitem-grid">
+              {battleItems.map((item) => (
+                <img
+                  key={item.id}
+                  src={item.imageUrl}
+                  alt={item.name}
+                  className="battleitem-option"
+                  onClick={() => handleBattleItemSelect(popupOpenIndex, item, "A")} // Handle battle item selection
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {popupOpenIndexB !== null && (
+        <div className="battleitem-overlay">
+          <div className="battleitem-popup">
+            <div className="battleitem-grid">
+              {battleItems.map((item) => (
+                <img
+                  key={item.id}
+                  src={item.imageUrl}
+                  alt={item.name}
+                  className="battleitem-option"
+                  onClick={() => handleBattleItemSelect(popupOpenIndexB, item, "B")} // Handle battle item selection for Team B
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+
+    {/* Side Navi 2 - Team B */}
+    <div className="layout__sideNavi2">
         {/* Team B Ban Section */}
         <div className="teamb-ban">
           {Array(2)
@@ -613,10 +685,10 @@ const handleItemSelect = (team, item) => {
                 )}
               </div>
             ))}
-        </div>
+      </div>
 
-        {/* Team B Pick Section */}
-        <div className="teamb-pick">
+    {/* Team B Pick Section */}
+    <div className="teamb-pick">
           {Array(5)
             .fill(null)
             .map((_, index) => (
@@ -694,8 +766,8 @@ const handleItemSelect = (team, item) => {
                 </div>
               </div>
             ))}
+          </div>
         </div>
-      </div>
 
       {/* Footer */}
       <div className="layout__footer">
