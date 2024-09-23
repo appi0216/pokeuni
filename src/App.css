@@ -14,6 +14,14 @@ html,body {
   overflow: hidden;
 }
 
+body {
+  padding-top: env(safe-area-inset-top);   /* Safe area for the top */
+  padding-bottom: env(safe-area-inset-bottom); /* Safe area for the bottom */
+  padding-left: calc(env(safe-area-inset-left));  /* Left safe area padding */
+  padding-right: calc(env(safe-area-inset-right)); /* Right safe area padding */
+
+}
+
 /* Add left gradient fade */
 body::before {
   content: '';
@@ -50,6 +58,8 @@ body::after {
   grid-template-rows: auto 1fr auto;
   position: relative;
   z-index: 2;
+  padding-left: calc(env(safe-area-inset-left) + .2em); /* Apply safe-area padding */
+  padding-right: calc(env(safe-area-inset-right) + .2em); /* Same for the right */
 }
 
 /* Header */
@@ -321,7 +331,7 @@ body::after {
 
 /* Pokemon Images */
 .pokemon-selection img {
-  width: 4vw;
+  width: 6vw;
   height: auto;
   margin: 0px;
   cursor: pointer;
@@ -419,7 +429,6 @@ button:active {
   .layout__sideNavi1 {
     grid-column: 1 / 4;
     font-size: 0.3rem; /* Smaller text size for mobile */
-    padding-left: calc(env(safe-area-inset-left) + .2em);
   }
   
   .layout__sideNavi2 {
