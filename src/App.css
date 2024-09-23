@@ -256,8 +256,8 @@ body::after {
   background-color: rgba(0, 0, 0, 0.7);
   color: white;
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
+  width: 1vw;
+  height: 1vw;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -280,7 +280,7 @@ body::after {
 .battleitem-grid {
   display: grid;
   grid-template-columns: repeat(9, 1fr); /* 3 items per row */
-  gap: 12px; /* Spacing between items */
+  gap: 0.6vw; /* Spacing between items */
   background-color: rgba(0, 0, 0, 0.7);
   padding: 2vw;
   border-radius: 16px;
@@ -291,7 +291,7 @@ body::after {
 
 .battleitem-option {
   width: 3vw;
-  height: vw;
+  height: 3vw;
   cursor: pointer;
 }
 
@@ -338,13 +338,8 @@ body::after {
 }
 
 .pokemon-selection {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(5vw, 1fr));
-  gap: 0.2vw;
-  justify-content: center;
-  align-items: center;
+  gap:2px
 }
-
 
 /* Footer */
 .layout__footer {
@@ -473,7 +468,7 @@ button:active {
 @media (min-width: 768px) and (max-width: 1200px) {
 
   .layout__header {
-    grid-column: 6 / 8;
+    grid-column: 4 / 10;
     font-size: 0.6rem; /* Smaller text size for mobile */
   }
   
@@ -493,11 +488,6 @@ button:active {
 
   .layout__mainContent {
     grid-column: 4 / 10;
-  }
-
-  .pokemon-selection img,
-  .preview-image {
-    width: 6vw; 
   }
 
   .layout__footer {
