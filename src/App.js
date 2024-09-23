@@ -664,8 +664,11 @@ const App = () => {
 
       {/* Footer */}
       <div className="layout__footer">
-        <button onClick={handleConfirmClick} disabled={!selectedPokemon}>
-          決定
+        <button 
+          onClick={handleConfirmClick} 
+          disabled={!selectedPokemon}
+          className={`confirm-button ${currentAction === "BAN" ? "ban-button" : "pick-button"}`}>
+          {currentAction === "BAN" ? "BAN" : "PICK"}
         </button>
       </div>
     </div>

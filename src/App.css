@@ -64,7 +64,7 @@ body::after {
 
 /* Header */
 .layout__header {
-  grid-column: 5 / 9;
+  grid-column: 4 / 10;
   color: white;
   text-align: center;
   padding: 10px;
@@ -355,25 +355,55 @@ body::after {
 }
 
 /* Buttons */
-button {
-  background-color: #61dafb;
-  color: white;
-  border: none;
-  padding: 1vh 2vw;
-  margin: 0.5vh;
-  cursor: pointer;
-  border-radius: 5px;
-  font-size: 1.2vw;
-  transition: font-size 0.3s ease, padding 0.3s ease;
-}
 
 button:disabled {
   background-color: #ccc;
 }
 
-button:hover {
-  background-color: #4caf50;
+/* Default button styling */
+.confirm-button {
+  padding: 10px 20px;
+  font-size: 16px;
 }
+
+/* BAN button specific styling */
+.ban-button {
+  background-color: #61dafb;
+  color: white;
+  border: none;
+  padding: 2vh 4vw;
+  margin: 3vh;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 1.2vw;
+  transition: font-size 0.3s ease, padding 0.3s ease;
+  border: 10px #ccc;
+}
+
+.ban-button:hover {
+  background-color: red;
+  color: white;
+}
+
+/* PICK button specific styling */
+.pick-button {
+  background-color: #61dafb;
+  color: white;
+  border: none;
+  padding: 2vh 4vw;
+  margin: 3vh;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 1.2vw;
+  transition: font-size 0.3s ease, padding 0.3s ease;
+  border: 2px #ccc;
+}
+
+.pick-button:hover {
+  background-color: #4caf50;
+  color: white;
+}
+
 
 button:active {
   transform: scale(0.98);
