@@ -82,8 +82,8 @@ const App = () => {
   const typingRef = useRef(null); // Ref for typing timeout
   const [isBackspacing, setIsBackspacing] = useState(false); // Track if backspacing is happening
   const [currentText, setCurrentText] = useState(""); // Track the full text of the current phase
-  const [expandedPlayerIndex, setExpandedPlayerIndex] = useState(null); // Track the current player index
-
+  const [expandedPlayerIndexA, setExpandedPlayerIndexA] = useState(null); // TeamAの拡大状態
+  const [expandedPlayerIndexB, setExpandedPlayerIndexB] = useState(null); // TeamBの拡大状態
   const [selectedIconA, setSelectedIconA] = useState({
     playerIndex: null,
     iconIndex: null,
@@ -256,6 +256,18 @@ const App = () => {
     return () => clearTimeout(typingRef.current);
   }, [isBackspacing, currentText]);
 
+  useEffect(() => {
+    if (currentTeam === teamA) {
+      const currentPlayerIndex = teamA.picks.length;
+      setExpandedPlayerIndexA(currentPlayerIndex);  // Team Aのプレイヤーを拡大
+      setExpandedPlayerIndexB(null);  // Team Bの拡大状態をリセット
+    } else {
+      const currentPlayerIndex = teamB.picks.length;
+      setExpandedPlayerIndexB(currentPlayerIndex);  // Team Bのプレイヤーを拡大
+      setExpandedPlayerIndexA(null);  // Team Aの拡大状態をリセット
+    }
+  }, [draftIndex, currentTeam]);
+
   const getPhaseText = (teamName, action) => {
     if (action === "BAN") {
       return `${teamName} - 使用禁止ポケモンを選択中`; // Ban phase message
@@ -350,20 +362,34 @@ const App = () => {
     const nextIndex = draftIndex + step;
     if (nextIndex >= 0 && nextIndex < default_draft.length) {
       setDraftIndex(nextIndex);
-      const team = default_draft[nextIndex][0]; // Current team (Team A or Team B)
-      const action = default_draft[nextIndex][1]; // Action (BAN or PICK)
-      const teamName = team === teamA ? "Team A" : "Team B"; // Get team name
-      const nextPhaseText = getPhaseText(teamName, action); // Generate the phase text
-  
+      const team = default_draft[nextIndex][0];
+      const action = default_draft[nextIndex][1];
+      const teamName = team === teamA ? "Team A" : "Team B";
+      const nextPhaseText = getPhaseText(teamName, action);
+      
       setCurrentTeam(team);
       setCurrentAction(action);
       
-      // Trigger backspacing before typing the new phase text
+      // ターンに応じてプレイヤーの拡大状態を更新
+      if (team === teamA) {
+        setExpandedPlayerIndexA(teamA.picks.length);
+        setExpandedPlayerIndexB(null);
+      } else {
+        setExpandedPlayerIndexB(teamB.picks.length);
+        setExpandedPlayerIndexA(null);
+      }
+      
+      // タイプテキストの更新
       setIsBackspacing(true);
       setCurrentText(nextPhaseText);
     } else {
+      // ドラフトが完了した場合の処理
       setDraftComplete(true);
       setCurrentText("ドラフトは完了しました。");
+  
+      // プレイヤーの拡大状態をリセット
+      setExpandedPlayerIndexA(null);
+      setExpandedPlayerIndexB(null);
     }
   };
 
@@ -496,11 +522,11 @@ const App = () => {
             .map((_, index) => (
               <div
                 key={index}
-                className={`select pokemon ${
-                  expandedPlayerIndex === index ? "expand" : ""
+                className={`selectpokemon-teama ${
+                  expandedPlayerIndexA === index ? "expand" : ""
                 }`} // Apply the 'expand' class if it's the player's turn
               >
-                          <div className="pick-pokemon-image-container">
+            <div className="pick-pokemon-image-container">
             {teamA.picks[index] ? (
               <img
                 src={teamA.picks[index].imageUrl}
@@ -694,8 +720,8 @@ const App = () => {
             .map((_, index) => (
               <div
                 key={index}
-                className={`select pokemon ${
-                  expandedPlayerIndex === index ? "expand" : ""
+                className={`selectpokemon-teamb ${
+                  expandedPlayerIndexB === index ? "expand" : ""
                 }`} // Apply the 'expand' class if it's the player's turn
               >
                 <div className="player-imageB">

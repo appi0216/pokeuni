@@ -130,6 +130,56 @@ body::after {
 }
 
 /* General flex container for Pokémon and Player name */
+.selectpokemon-teama {
+  display: flex;
+  justify-content: space-between; /* This aligns the image to the left and player name to the right */
+  align-items: center;
+  margin: 1vh 0; /* Space between the rows */
+  padding: 5px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: width 0.5s ease; /* Smooth transition for the width */
+  box-sizing: border-box; /* Ensures padding and borders are included in the element's total width */
+  position: relative; /* To allow absolute positioning of child elements */
+  height: 12vh; /* Adjust height dynamically based on viewport height */
+  min-height: 40px; /* Ensure a minimum height for very small screens */
+  overflow: visible; /* Prevents overflow of child elements */
+  width: 90%;  /* Default width */
+  max-width: 90%; /* Default max width */
+  transition: width 0.5s ease, max-width 0.5s ease;
+}
+
+.selectpokemon-teama.expand {
+  width: 100%;  /* Expand width on player's turn */
+  max-width: 100%;
+}
+
+.selectpokemon-teamb {
+  display: flex;
+  justify-content: space-between; /* This aligns the image to the left and player name to the right */
+  align-items: center;
+  margin: 1vh 0; /* Space between the rows */
+  padding: 5px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: width 0.5s ease; /* Smooth transition for the width */
+  box-sizing: border-box; /* Ensures padding and borders are included in the element's total width */
+  position: relative; /* To allow absolute positioning of child elements */
+  height: 12vh; /* Adjust height dynamically based on viewport height */
+  min-height: 40px; /* Ensure a minimum height for very small screens */
+  overflow: visible; /* Prevents overflow of child elements */
+  width: 90%;  /* Default width */
+  max-width: 90%;
+  transition: width 0.5s ease, max-width 0.5s ease;
+  margin-left: auto;  /* 左寄せにする */
+}
+
+.selectpokemon-teamb.expand {
+  width: 100%;  /* Expand width on player's turn */
+  max-width: 100%;
+  margin-left: 0;
+}
+
 .select.pokemon {
   display: flex;
   justify-content: space-between; /* This aligns the image to the left and player name to the right */
@@ -144,6 +194,8 @@ body::after {
   height: 12vh; /* Adjust height dynamically based on viewport height */
   min-height: 40px; /* Ensure a minimum height for very small screens */
   overflow: visible; /* Prevents overflow of child elements */
+  width: 80%;  /* Default width */
+  max-width: 80%; /* Default max width */
 }
 
 /* Pokémon image container */
