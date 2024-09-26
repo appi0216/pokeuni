@@ -408,36 +408,6 @@ const App = () => {
     return (ismewtwoy && ismewtwoxSelected) || (ismewtwox && ismewtwoySelected);
   };
 
-  const handleUndoClick = () => {
-    if (draftIndex > 0) {
-      updateDraft(-1);
-      const lastAction = default_draft[draftIndex - 1];
-      const lastTeam = lastAction[0];
-      const lastActionType = lastAction[1];
-
-      if (lastActionType === "BAN") {
-        lastTeam.bans.pop();
-        setBans([...bans.slice(0, -1)]);
-      } else if (lastActionType === "PICK") {
-        lastTeam.picks.pop();
-        setPicks([...picks.slice(0, -1)]);
-      }
-    }
-  };
-
-  const handleResetClick = () => {
-    setBans([]);
-    setPicks([]);
-    teamA.bans = [];
-    teamA.picks = [];
-    teamB.bans = [];
-    teamB.picks = [];
-    setDraftIndex(0);
-    setCurrentTeam(default_draft[0][0]);
-    setCurrentAction(default_draft[0][1]);
-    setDraftComplete(false);
-  };
-
   const playerImagesA = [
     process.env.PUBLIC_URL + "/red.png",
     process.env.PUBLIC_URL + "/hibiki.png",
@@ -461,8 +431,115 @@ const App = () => {
       onSelect(item); // Trigger onSelect when an item is clicked
     };
   
-  };   
+  };
+  
+  const lanes = ["レーンを選択", "上ルート", "中央エリア", "下ルート"];
+  const [selectedLanesA, setSelectedLanesA] = useState(Array(5).fill("レーンを選択"));
+  const [selectedLanesB, setSelectedLanesB] = useState(Array(5).fill("レーンを選択"));
 
+  const handleLaneSelect = (team, playerIndex, event) => {
+    if (team === "A") {
+      const updatedLanes = [...selectedLanesA];
+      updatedLanes[playerIndex] = event.target.value;
+      setSelectedLanesA(updatedLanes);
+    } else if (team === "B") {
+      const updatedLanes = [...selectedLanesB];
+      updatedLanes[playerIndex] = event.target.value;
+      setSelectedLanesB(updatedLanes);
+    }
+  };
+
+  const [isPopupVisible, setIsPopupVisible] = useState(false); // マップポップアップの表示状態
+
+  const handleMapButtonClick = () => {
+    setIsPopupVisible(true); // マップボタンが押されたときにポップアップを表示
+  };
+  
+  const handlePopupClose = () => {
+    setIsPopupVisible(false); // ポップアップを閉じる
+  };
+
+  const lanePositionsTeamA = {
+    "上ルート": { top: "30%", left: "20%" },
+    "中央エリア": { top: "48%", left: "25%" },
+    "下ルート": { top: "65%", left: "20%" },
+  };
+  
+  const lanePositionsTeamB = {
+    "上ルート": { top: "30%", right: "33%" },
+    "中央エリア": { top: "48%", right: "38%" },
+    "下ルート": { top: "65%", right: "33%" },
+  };
+
+  const renderCirclesForLanes = (selectedLanesA, selectedLanesB, teamA, teamB) => {
+    const laneOffsets = {
+      "上ルート": 0,
+      "中央エリア": 0,
+      "下ルート": 0,
+    };
+  
+    return (
+      <div>
+        {/* Team A circles */}
+        {selectedLanesA.map((lane, index) => {
+          const lanePosition = lanePositionsTeamA[lane]; // Team Aのレーンポジション
+          if (lanePosition) {
+            // 重複した場合のオフセットを追加
+            const offset = laneOffsets[lane] * 40; // オフセットを調整
+            laneOffsets[lane] += 1; // 次のプレイヤーのオフセットを増やす
+  
+            const selectedPokemon = teamA.picks[index]; // Team Aのプレイヤーが選択したポケモン
+            const playerImage = playerImagesA[index]; // プレイヤー画像
+  
+            return (
+              <div
+                key={`teamA-${index}`}
+                className="lane-circleA"
+                style={{ ...lanePosition, left: `calc(${lanePosition.left} + ${offset}px)` }} // オフセットを追加
+              >
+                <img
+                  src={selectedPokemon ? selectedPokemon.imageUrl : playerImage} // 選択されたポケモンがある場合、その画像を表示
+                  alt={selectedPokemon ? selectedPokemon.name.English : `Player ${index + 1}`}
+                  style={{ width: '100%', height: '100%' }}
+                />
+              </div>
+            );
+          }
+          return null;
+        })}
+  
+        {/* Team B circles */}
+        {Object.keys(laneOffsets).forEach(lane => laneOffsets[lane] = 0)}
+  
+        {selectedLanesB.map((lane, index) => {
+          const lanePosition = lanePositionsTeamB[lane]; // Team Bのレーンポジション
+          if (lanePosition) {
+            // 重複した場合のオフセットを追加
+            const offset = laneOffsets[lane] * 40; // オフセットを調整
+            laneOffsets[lane] += 1; // 次のプレイヤーのオフセットを増やす
+  
+            const selectedPokemon = teamB.picks[index]; // Team Bのプレイヤーが選択したポケモン
+            const playerImage = playerImagesB[index]; // プレイヤー画像
+  
+            return (
+              <div
+                key={`teamB-${index}`}
+                className="lane-circleB"
+                style={{ ...lanePosition, right: `calc(${lanePosition.right} + ${offset}px)` }} // オフセットを追加
+              >
+                <img
+                  src={selectedPokemon ? selectedPokemon.imageUrl : playerImage} // 選択されたポケモンがある場合、その画像を表示
+                  alt={selectedPokemon ? selectedPokemon.name.English : `Player ${index + 1}`}
+                  style={{ width: '100%', height: '100%' }}
+                />
+              </div>
+            );
+          }
+          return null;
+        })}
+      </div>
+    );
+  };
 
   return (
     <div className="container">
@@ -583,17 +660,30 @@ const App = () => {
                   onSelect={(item) => handleBattleItemSelect(index, item,"A")} // Handle battle item selection for that player
                 />
               )}
-            </div>
-
-
+              </div>
+              
           {/* Player image */}
-          <div className="player-imageA">
-            <img src={playerImagesA[index]} alt={`Player ${index + 1}`} />
-          </div>
+          <div className="playerpulldown-containerA">
+                  <div className="player-imageA">
+                    <img src={playerImagesA[index]} alt={`Player ${index + 1}`} />
+                  </div>
+                <select
+                  value={selectedLanesA[index]} 
+                  onChange={(event) => handleLaneSelect("A",index, event)}
+                  className="lane-select-dropdown"  // 必要に応じてクラスを追加
+                >
+                  {lanes.map((lane, i) => (
+                    <option key={i} value={lane}>
+                      {lane}
+                    </option>
+                  ))}
+                </select>
+              </div>
         </div>
       ))}
   </div>
 </div>
+
 
     {/* Main Content */}
       <div className="layout__mainContent">
@@ -682,6 +772,19 @@ const App = () => {
         </div>
       )}
 
+      {isPopupVisible && (
+        <div className="popup-overlay">
+          <div className="lane-selection-popup">
+            <img src={`${process.env.PUBLIC_URL}/Theia_Sky_Ruins.png`} alt="Theia Sky Ruins Map" />
+            {/* Draw circles based on lane selection */}
+            {renderCirclesForLanes(selectedLanesA, selectedLanesB, teamA, teamB)}
+            <button className="confirm-button" onClick={handlePopupClose}>
+              閉じる
+            </button>
+          </div>
+        </div>
+      )}
+
 
     {/* Side Navi 2 - Team B */}
     <div className="layout__sideNavi2">
@@ -724,8 +827,21 @@ const App = () => {
                   expandedPlayerIndexB === index ? "expand" : ""
                 }`} // Apply the 'expand' class if it's the player's turn
               >
-                <div className="player-imageB">
-                  <img src={playerImagesB[index]} alt={`Player ${index + 1}`} />
+                <div className="playerpulldown-containerB">
+                  <div className="player-imageB">
+                    <img src={playerImagesB[index]} alt={`Player ${index + 1}`} />
+                  </div>
+                <select
+                  value={selectedLanesB[index]} 
+                  onChange={(event) => handleLaneSelect("B",index, event)}
+                  className="lane-select-dropdown"  // 必要に応じてクラスを追加
+                >
+                  {lanes.map((lane, i) => (
+                    <option key={i} value={lane}>
+                      {lane}
+                    </option>
+                  ))}
+                </select>
                 </div>
 
                 <div className="icon-containerB">
@@ -797,6 +913,9 @@ const App = () => {
 
       {/* Footer */}
       <div className="layout__footer">
+        <button className="map-button" onClick={handleMapButtonClick}>
+          マップ
+        </button>
         <button 
           onClick={handleConfirmClick} 
           disabled={!selectedPokemon}
