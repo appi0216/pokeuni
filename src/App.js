@@ -67,7 +67,7 @@ const App = () => {
   const [expandedPlayerIndexA, setExpandedPlayerIndexA] = useState(null); // TeamAの拡大状態
   const [expandedPlayerIndexB, setExpandedPlayerIndexB] = useState(null); // TeamBの拡大状態
   const [searchQuery, setSearchQuery] = useState("");  // New search input state
-
+  
   // Function to handle search input changes
   const handleSearchChange = (event) => {
   setSearchQuery(event.target.value);
