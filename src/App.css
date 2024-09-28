@@ -14,13 +14,6 @@ html,body {
   overflow: hidden;
 }
 
-body {
-  padding-left: calc(env(safe-area-inset-left));  /* Left safe area padding */
-  padding-right: calc(env(safe-area-inset-right)); /* Right safe area padding */
-  padding-top: calc(env(safe-area-inset-top)); /* Top safe area padding */
-  padding-bottom: calc(env(safe-area-inset-bottom)); /* Bottom safe area padding */
-}
-
 /* Add left gradient fade */
 body::before {
   content: '';
@@ -48,13 +41,13 @@ body::after {
 /* Grid Layout */
 .container {
   display: grid;
-  grid-template-columns: repeat(24, 1fr);
-  grid-template-rows: repeat(12, 1fr);
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(auto, 1fr, auto);
   gap: 10px;
   width: 100%;
   margin: 0 auto;
   height: 100vh;
-  width: 100vw;
+  max-width: 1660px; /* Restrict the content to a maximum width */
   position: relative;
   z-index: 2;
   padding-left: calc(env(safe-area-inset-left) + .2em); /* Apply safe-area padding */
@@ -64,18 +57,65 @@ body::after {
 /* Header */
 .layout__header {
   display: grid;
-  grid-column: 10 / 16;
-  grid-row: 1/ 3;
+  grid-column: 4 / 10;
+  grid-row: 1/ 2;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
   color: white;
   text-align: center;
   padding: 10px;
   font-size: 0.6vw; /* Default size */
 }
 
+.header__title {
+  grid-column: span 3 / span 3
+}
+
+.name-search {
+  position: relative;
+  display: inline-block;
+  align-self: center;
+  justify-self: center;
+  grid-column-start: 2;
+  grid-row-start: 2;
+}
+
+.name-search input {
+  padding: 8px;
+  font-size: 0.8vw;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 8vw; /* Adjust the width as needed */
+  padding-right: 30px; /* Ensure space for the clear button inside the input */
+}
+
+.name-search input:focus {
+  border-color: #61dafb; /* Optional: Add a border color on focus */
+  outline: none;
+}
+
+.clear-button {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.clear-button:hover {
+  color: red;
+}
+
 .dropdown {
   position: relative;
   display: inline-block;
   font-size: 2vw; /* Default size */
+  grid-column-start: 2;
+  grid-row-start: 2;
+  display: none;
 }
 
 /* Side Navigation */
@@ -86,8 +126,8 @@ body::after {
   justify-items: flex-start; /* 左揃え */
   align-items: flex-start; /* 上揃え */
   padding: 2vh;
-  grid-column: 1 / 8;
-  grid-row: 1 / 13;
+  grid-column: 1 / 4;
+  grid-row: 1 / 3;
   background-color: rgba(0, 0, 0, 0);
   color: white;
   text-align: center;
@@ -102,8 +142,8 @@ body::after {
   justify-items: flex-end; /* 左揃え */
   align-items: flex-start; /* 上揃え */
   padding: 2vh;
-  grid-column: 18 / 25;
-  grid-row: 1 / 13;
+  grid-column: 10 / 13;
+  grid-row: 1 / 3;
   background-color: rgba(0, 0, 0, 0);
   color: white;
   text-align: center;
@@ -143,7 +183,7 @@ body::after {
   display: flex;
   justify-content: space-between; /* This aligns the image to the left and player name to the right */
   align-items: center;
-  margin: 1vh 0; /* Space between the rows */
+  margin: 0.6vh 0; /* Space between the rows */
   padding: 5px;
   background-color: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -151,7 +191,7 @@ body::after {
   box-sizing: border-box; /* Ensures padding and borders are included in the element's total width */
   position: relative; /* To allow absolute positioning of child elements */
   height: 12vh; /* Adjust height dynamically based on viewport height */
-  min-height: 40px; /* Ensure a minimum height for very small screens */
+  min-height: 36px; /* Ensure a minimum height for very small screens */
   overflow: visible; /* Prevents overflow of child elements */
   width: 90%;  /* Default width */
   max-width: 90%; /* Default max width */
@@ -164,7 +204,7 @@ body::after {
 }
 
 .selectpokemon-teama .player-imageA {
-  flex-shrink: 2; /* Shrinks more as the screen is resized */
+  flex-shrink: 10; /* Shrinks more as the screen is resized */
   min-width: 1vw; /* Minimum width for the player image */
 }
 
@@ -180,7 +220,7 @@ body::after {
   display: flex;
   justify-content: space-between; /* This aligns the image to the left and player name to the right */
   align-items: center;
-  margin: 1vh 0; /* Space between the rows */
+  margin: 0.6vh 0; /* Space between the rows */
   padding: 5px;
   background-color: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -201,6 +241,20 @@ body::after {
   max-width: 100%;
   margin-left: 0;
 }
+
+.selectpokemon-teamb .player-imageB {
+  flex-shrink: 10; /* Shrinks more as the screen is resized */
+  min-width: 1vw; /* Minimum width for the player image */
+}
+
+.selectpokemon-teamb .pick-pokemon-image-container {
+  flex-shrink: 0; /* Prevents shrinking for Pokémon images */
+  min-width: 4vw; /* Ensures a minimum size for the Pokémon images */
+  width: 4vw;
+  height: 4vw;
+  margin: 2px;
+}
+
 
 .select.pokemon {
   display: flex;
@@ -252,10 +306,10 @@ body::after {
 .icon-container {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: space-around;
   padding: 0 5px; /* Optional: add padding for better spacing */
   height: 5vh; /* Match height of the other elements */
-  gap: 5px; /* Ensure space between each circle */
+  gap: 0.2vw; /* Ensure space between each circle */
 }
 
 /* プルダウンメニューのスタイル */
@@ -278,8 +332,8 @@ body::after {
 }
 
 .icon-circle {
-  width: 2vw; /* Adjust size */
-  height: 2vw;
+  width: 1.8vw; /* Adjust size */
+  height: 1.8vw;
   border-radius: 50%; /* Makes it a circle */
   display: flex;
   justify-content: center;
@@ -379,10 +433,11 @@ body::after {
 }
 
 .battle-item-circle {
-  width: 2vw;
-  height: 2vw;
+  width: 1.8vw;
+  height: 1.8vw;
   border-radius: 50%;
   background-color: lightgray;
+  border: 1px lightgrey;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -414,8 +469,8 @@ body::after {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 2vw;
-  height: 2vw;
+  width: 2.4vw;
+  height: 2.4vw;
 }
 
 /* If needed, image inside player-image */
@@ -428,33 +483,46 @@ body::after {
 /* Main Content */
 .layout__mainContent {
   display: grid;
-  grid-column: 8 / 18;
-  grid-row: 3 / 12;
+  grid-column: 4 / 10;
+  grid-row: 2 / 3;
   padding: 1vw;
   overflow-y: auto;
+  min-height: 62.6vh;
   max-height: calc(100vh - 160px); /* Adjust to prevent overlap with footer */
   box-sizing: flex-end;
+  visibility: visible;
 }
 
-.pokemon-selection {
-  gap:2px
-}
 
 /* Footer */
 .layout__footer {
   display: grid;
-  grid-column: 8 / 18;
-  grid-row: 12 / 13;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(1, 1fr);
+  grid-column: 4 / 10;
+  grid-row: 3 / 4;
   padding: 2px;
   text-align: center;
   position: relative;
 }
 
+.pokemon-selection {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr); /* 6 columns for items */
+  grid-template-rows: repeat(8, 1fr); /* 3 rows for items */
+  gap: 0.4vw; /* Spacing between items */
+  padding: 0.2vw;
+  max-width: 100%; /* Adjust size of the popup */
+  max-height: 100%; /* Adjust size of the popup */
+  box-sizing: border-box;
+}
+
 /* Pokemon Images */
 .pokemon-selection img {
-  width: 5vw;
-  height: auto;
-  margin: 0px;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  margin: 1px;
   cursor: pointer;
   transition: width 0.3s ease, height 0.3s ease;
 }
@@ -488,7 +556,7 @@ button:disabled {
 
 /* BAN button specific styling */
 .ban-button {
-  grid-column: 3 / 6;
+  grid-column: span 2 / span 2;
   background-color: #61dafb;
   color: white;
   border: none;
@@ -508,7 +576,7 @@ button:disabled {
 
 /* PICK button specific styling */
 .pick-button {
-  grid-column: 3 / 6;
+  grid-column: span 2 / span 2;
   background-color: #61dafb;
   color: white;
   border: none;
@@ -532,7 +600,6 @@ button:active {
 }
 
 .map-button {
-  grid-column: 1 / 3;
   background-color: #61dafb;
   color: white;
   border: none;
@@ -546,16 +613,38 @@ button:active {
 }
 
 .lane-selection-popup {
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.7);
-  padding: 2vw;
-  border-radius: 16px;
-  max-width: 100%;
-  max-height: 100%;
-  box-sizing: border-box;
+  max-width: 90vw; /* Responsive max width */
+  max-height: 90vh; /* Responsive max height */
+  width: auto;
+  height: auto;
+  background-color: rgba(0, 0, 0, 0.8); /* Dark background */
+  border-radius: 10px;
+  overflow: hidden; /* Prevents overflow issues */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.lane-selection-popup .close-button {
+  position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    font-weight: bold;
+    color: rgb(255, 154, 3);
+    background-color: transparent; /* No background */
+    border: none;
+    cursor: pointer;
+    z-index: 10; /* Ensure it's above the map */
+}
+
+.lane-selection-popup .close-button:hover {
+  color: #ff5f5f;
 }
 
 .popup-overlay {
@@ -571,28 +660,16 @@ button:active {
   background-color: rgba(0, 0, 0, 0.7); /* Darken background for emphasis */
 }
 
-.lane-selection-popup {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr); /* 6 columns for items */
-  gap: 0.6vw; /* Spacing between items */
-  background-color: rgb(91, 111, 204);
-  padding: 2vw;
-  border-radius: 16px;
-  max-width: 100%; /* Adjust size of the popup */
-  max-height: 100%; /* Adjust size of the popup */
-  box-sizing: border-box;
-}
-
 .Theia_Sky_Ruins img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto; /* Ensures the height scales with width, maintaining aspect ratio */
+  object-fit: contain; /* Ensures the image fits inside without being cut off */
 }
 
 .lane-circleA {
   position: absolute;
-  width: 2vw;
-  height: 2vw;
+  width: 2.6vw;
+  height: 2.6vw;
   border-radius: 50%;
   border: 2px solid white;
   overflow: hidden;
@@ -604,8 +681,8 @@ button:active {
 
 .lane-circleB {
   position: absolute;
-  width: 2vw;
-  height: 2vw;
+  width: 2.6vw;
+  height: 2.6vw;
   border-radius: 50%;
   border: 2px solid white;
   overflow: hidden;
@@ -613,4 +690,20 @@ button:active {
   justify-content: center;
   align-items: center;
   background-color: rgb(255, 192, 121);
+}
+
+@media screen and (max-width: 1080px) {
+
+  /* Hide the player image on smaller screens */
+  .selectpokemon-teama .player-imageA {
+    display: none;
+  }
+  .selectpokemon-teamb .player-imageB {
+    display: none;
+  }
+  
+  .select.selectpokemon-teama, .select.selectpokemon-teamb {
+    min-width: 140px;
+    min-height: 32px;
+  }
 }

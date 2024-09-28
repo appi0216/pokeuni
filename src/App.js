@@ -25,22 +25,6 @@ class Team {
 const teamA = new Team("Team A");
 const teamB = new Team("Team B");
 
-// Initial player names
-const initialPlayerNamesA = [
-  "Player 1",
-  "Player 2",
-  "Player 3",
-  "Player 4",
-  "Player 5",
-];
-const initialPlayerNamesB = [
-  "Player 1",
-  "Player 2",
-  "Player 3",
-  "Player 4",
-  "Player 5",
-];
-
 // Draft order
 const default_draft = [
   [teamA, "BAN"],
@@ -75,8 +59,6 @@ const App = () => {
   const [selectedPokemon, setSelectedPokemon] = useState(null);
   const [userInteracted, setUserInteracted] = useState(false);
   const [draftComplete, setDraftComplete] = useState(false);
-  const [playerNamesA, setPlayerNamesA] = useState(initialPlayerNamesA);
-  const [playerNamesB, setPlayerNamesB] = useState(initialPlayerNamesB);
   const [displayText, setDisplayText] = useState(""); // For animated text
   const displayTextRef = useRef(""); // Track the current displayed text
   const typingRef = useRef(null); // Ref for typing timeout
@@ -84,6 +66,25 @@ const App = () => {
   const [currentText, setCurrentText] = useState(""); // Track the full text of the current phase
   const [expandedPlayerIndexA, setExpandedPlayerIndexA] = useState(null); // TeamAの拡大状態
   const [expandedPlayerIndexB, setExpandedPlayerIndexB] = useState(null); // TeamBの拡大状態
+  const [searchQuery, setSearchQuery] = useState("");  // New search input state
+
+  // Function to handle search input changes
+  const handleSearchChange = (event) => {
+  setSearchQuery(event.target.value);
+  };
+  
+  // Function to convert Katakana to Hiragana
+  const convertToHiragana = (input) => {
+    return input.replace(/[\u30a1-\u30f6]/g, (match) =>
+      String.fromCharCode(match.charCodeAt(0) - 0x60)
+    );
+  };
+
+  // Function to normalize search queries by converting them to lowercase and Hiragana
+  const normalizeSearchQuery = (input) => {
+    return convertToHiragana(input).toLowerCase();
+  };
+
   const [selectedIconA, setSelectedIconA] = useState({
     playerIndex: null,
     iconIndex: null,
@@ -153,19 +154,6 @@ const App = () => {
     }
   };
 
-  const handleConfirmSelection = () => {
-  if (selectedItems.length === 3) {
-    if (activeTeamPopup === "A") {
-      handleItemSelect("A", selectedItems);
-    } else {
-      handleItemSelect("B", selectedItems);
-    }
-    setSelectedItems([]); // Reset selected items after confirmation
-  } else {
-    alert("Please select exactly 3 items.");
-  }
-  };
-
   const [selectedBattleItemsA, setSelectedBattleItemsA] = useState(Array(5).fill(null)); // Array of 5 battle items for Team A
   const [selectedBattleItemsB, setSelectedBattleItemsB] = useState(Array(5).fill(null)); // Team B battle items
 
@@ -200,7 +188,7 @@ const App = () => {
 
   const [activeTeamPopup, setActiveTeamPopup] = useState(null); // "A" or "B" or null
 
-  const banSound = useRef(new Audio("/決定ボタンを押す52.mp3"));
+  const banSound = useRef(new Audio('${process.env.PUBLIC_URL}/決定ボタンを押す52.mp3'));
   const crySound = useRef(null);
 
   useEffect(() => {
@@ -230,31 +218,38 @@ const App = () => {
   }, []);
 
   useEffect(() => {
+    // Reset display text before typing the new phase text
+    displayTextRef.current = "";  // Clear the display text state
+    setDisplayText("");  // Clear the displayed text
+  
+    const teamName = currentTeam === teamA ? "Team A" : "Team B";
+    const nextPhaseText = getPhaseText(teamName, currentAction);  // Get the new phase text
+  
+    setCurrentText(nextPhaseText);  // Set the new text for typing
+    setIsBackspacing(false);  // Ensure we are typing, not backspacing
+  
     const handleTyping = () => {
       if (!isBackspacing) {
-        // Typing phase: add characters one by one
+        // Add characters one by one for typing
         if (displayTextRef.current.length < currentText.length) {
           displayTextRef.current += currentText.charAt(displayTextRef.current.length);
           setDisplayText(displayTextRef.current);
-          typingRef.current = setTimeout(handleTyping, 100); // Typing speed
+          typingRef.current = setTimeout(handleTyping, 100);  // Typing speed
         }
       } else {
-        // Backspacing phase: remove characters one by one
+        // Handle backspacing
         if (displayTextRef.current.length > 0) {
           displayTextRef.current = displayTextRef.current.slice(0, -1);
           setDisplayText(displayTextRef.current);
-          typingRef.current = setTimeout(handleTyping, 50); // Backspacing speed
-        } else {
-          // Once backspacing is done, start typing the new phase text
-          setIsBackspacing(false);
+          typingRef.current = setTimeout(handleTyping, 50);  // Backspacing speed
         }
       }
     };
   
-    handleTyping();
+    handleTyping();  // Start the typing effect
   
-    return () => clearTimeout(typingRef.current);
-  }, [isBackspacing, currentText]);
+    return () => clearTimeout(typingRef.current);  // Clean up the timeout on phase change
+  }, [currentTeam, currentAction, currentText, isBackspacing]);
 
   useEffect(() => {
     if (currentTeam === teamA) {
@@ -268,17 +263,15 @@ const App = () => {
     }
   }, [draftIndex, currentTeam]);
 
+  // Function to get the phase text
   const getPhaseText = (teamName, action) => {
     if (action === "BAN") {
-      return `${teamName} - 使用禁止ポケモンを選択中`; // Ban phase message
+      return `${teamName} - 使用禁止ポケモンを選択中`;  // Ban phase message
     } else if (action === "PICK") {
       const currentPlayerIndex = teamName === "Team A" ? teamA.picks.length : teamB.picks.length;
-      const playerName = teamName === "Team A" 
-        ? `Player ${currentPlayerIndex + 1}` // Player index for Team A
-        : `Player ${currentPlayerIndex + 1}`; // Player index for Team B
-      return `${teamName} ${playerName} - 使用ポケモンを選択中`; // Pick phase message
+      return `${teamName} Player ${currentPlayerIndex + 1} - 使用ポケモンを選択中`;  // Pick phase message
     }
-    return ""; // Default case
+    return "";  // Default case
   };
   
   //タイプ変更
@@ -287,10 +280,27 @@ const App = () => {
   };
 
   //ポケモン絞り込み
-  const filteredPokemonList =
-    selectedType === "すべて"
-      ? pokemonList
-      : pokemonList.filter((p) => p.type === selectedType);
+  // Filter the Pokémon list based on type and search query
+  const filteredPokemonList = pokemonList.filter((pokemon) => {
+    // Type filtering
+    const typeMatches =
+      selectedType === "すべて" || pokemon.type === selectedType;
+  
+    // Check that English and Japanese names exist before accessing them
+    const hasEnglishName = pokemon.name && pokemon.name.English;
+    const hasJapaneseName = pokemon.name && pokemon.name.Japanese;
+  
+    // Normalize the search query by converting it to Hiragana and lowercase
+    const normalizedQuery = normalizeSearchQuery(searchQuery);
+  
+    // Name filtering (check English, Japanese, Katakana, and Hiragana)
+    const searchMatches = searchQuery === "" ||
+      (hasEnglishName && pokemon.name.English.toLowerCase().includes(normalizedQuery)) ||
+      (hasJapaneseName && convertToHiragana(pokemon.name.Japanese).includes(normalizedQuery)) ||
+      (hasJapaneseName && pokemon.name.JapaneseKana && pokemon.name.JapaneseKana.includes(normalizedQuery));
+  
+    return typeMatches && searchMatches;
+  });
 
   const handlePokemonClick = (pokemon) => {
     if (draftComplete || isPokemonDisabled(pokemon)) {
@@ -364,35 +374,34 @@ const App = () => {
       setDraftIndex(nextIndex);
       const team = default_draft[nextIndex][0];
       const action = default_draft[nextIndex][1];
+  
+      setCurrentTeam(team);  // Update team
+      setCurrentAction(action);  // Update action
+  
       const teamName = team === teamA ? "Team A" : "Team B";
       const nextPhaseText = getPhaseText(teamName, action);
-      
-      setCurrentTeam(team);
-      setCurrentAction(action);
-      
-      // ターンに応じてプレイヤーの拡大状態を更新
+  
+      setCurrentText(nextPhaseText);  // Update the text to type out
+      setIsBackspacing(true);  // Start backspacing the previous text
+  
+      // Handle expanding the player section
       if (team === teamA) {
-        setExpandedPlayerIndexA(teamA.picks.length);
-        setExpandedPlayerIndexB(null);
+        setExpandedPlayerIndexA(teamA.picks.length);  // Expand Team A's player
+        setExpandedPlayerIndexB(null);  // Reset Team B's expanded state
       } else {
-        setExpandedPlayerIndexB(teamB.picks.length);
-        setExpandedPlayerIndexA(null);
+        setExpandedPlayerIndexB(teamB.picks.length);  // Expand Team B's player
+        setExpandedPlayerIndexA(null);  // Reset Team A's expanded state
       }
-      
-      // タイプテキストの更新
-      setIsBackspacing(true);
-      setCurrentText(nextPhaseText);
     } else {
-      // ドラフトが完了した場合の処理
       setDraftComplete(true);
       setCurrentText("ドラフトは完了しました。");
   
-      // プレイヤーの拡大状態をリセット
+      // Reset expanded players when draft is complete
       setExpandedPlayerIndexA(null);
       setExpandedPlayerIndexB(null);
     }
   };
-
+  
   const isPokemonDisabled = (pokemon) => {
     if (bans.includes(pokemon) || picks.includes(pokemon)) {
       return true;
@@ -407,6 +416,7 @@ const App = () => {
       picks.some((p) => p.name.English === "mewtwox");
     return (ismewtwoy && ismewtwoxSelected) || (ismewtwox && ismewtwoySelected);
   };
+
 
   const playerImagesA = [
     process.env.PUBLIC_URL + "/red.png",
@@ -427,10 +437,6 @@ const App = () => {
   ];
 
   const BattleItemPopup = ({ onSelect }) => {
-    const handleItemClick = (item) => {
-      onSelect(item); // Trigger onSelect when an item is clicked
-    };
-  
   };
   
   const lanes = ["レーンを選択", "上ルート", "中央エリア", "下ルート"];
@@ -460,15 +466,15 @@ const App = () => {
   };
 
   const lanePositionsTeamA = {
-    "上ルート": { top: "30%", left: "20%" },
-    "中央エリア": { top: "48%", left: "25%" },
-    "下ルート": { top: "65%", left: "20%" },
+    "上ルート": { top: "22%", left: "30%" },
+    "中央エリア": { top: "45%", left: "25%" },
+    "下ルート": { top: "80%", left: "30%" },
   };
   
   const lanePositionsTeamB = {
-    "上ルート": { top: "30%", right: "33%" },
-    "中央エリア": { top: "48%", right: "38%" },
-    "下ルート": { top: "65%", right: "33%" },
+    "上ルート": { top: "22%", right: "30%" },
+    "中央エリア": { top: "45%", right: "25%" },
+    "下ルート": { top: "80%", right: "30%" },
   };
 
   const renderCirclesForLanes = (selectedLanesA, selectedLanesB, teamA, teamB) => {
@@ -485,7 +491,7 @@ const App = () => {
           const lanePosition = lanePositionsTeamA[lane]; // Team Aのレーンポジション
           if (lanePosition) {
             // 重複した場合のオフセットを追加
-            const offset = laneOffsets[lane] * 40; // オフセットを調整
+            const offset = laneOffsets[lane] * 4; // オフセットを調整
             laneOffsets[lane] += 1; // 次のプレイヤーのオフセットを増やす
   
             const selectedPokemon = teamA.picks[index]; // Team Aのプレイヤーが選択したポケモン
@@ -495,7 +501,7 @@ const App = () => {
               <div
                 key={`teamA-${index}`}
                 className="lane-circleA"
-                style={{ ...lanePosition, left: `calc(${lanePosition.left} + ${offset}px)` }} // オフセットを追加
+                style={{ ...lanePosition, left: `calc(${lanePosition.left} + ${offset}vw)` }} // オフセットを追加
               >
                 <img
                   src={selectedPokemon ? selectedPokemon.imageUrl : playerImage} // 選択されたポケモンがある場合、その画像を表示
@@ -515,7 +521,7 @@ const App = () => {
           const lanePosition = lanePositionsTeamB[lane]; // Team Bのレーンポジション
           if (lanePosition) {
             // 重複した場合のオフセットを追加
-            const offset = laneOffsets[lane] * 40; // オフセットを調整
+            const offset = laneOffsets[lane] * 4; // オフセットを調整
             laneOffsets[lane] += 1; // 次のプレイヤーのオフセットを増やす
   
             const selectedPokemon = teamB.picks[index]; // Team Bのプレイヤーが選択したポケモン
@@ -525,7 +531,7 @@ const App = () => {
               <div
                 key={`teamB-${index}`}
                 className="lane-circleB"
-                style={{ ...lanePosition, right: `calc(${lanePosition.right} + ${offset}px)` }} // オフセットを追加
+                style={{ ...lanePosition, right: `calc(${lanePosition.right} + ${offset}vw)` }} // オフセットを追加
               >
                 <img
                   src={selectedPokemon ? selectedPokemon.imageUrl : playerImage} // 選択されたポケモンがある場合、その画像を表示
@@ -545,11 +551,13 @@ const App = () => {
     <div className="container">
       {/* Header */}
       <div className="layout__header">
+        <div className="header__title">
         <h1>
           {draftComplete
             ? "ドラフトは完了しました。"
             : displayText} {/* Just display `displayText` here */}
         </h1>
+        </div>
         <div className="dropdown">
           <select onChange={handleTypeChange} value={selectedType}>
             <option value="すべて">すべて</option>
@@ -559,6 +567,19 @@ const App = () => {
             <option value="アタック">アタック</option>
             <option value="スピード">スピード</option>
           </select>
+        </div>
+        <div className="name-search">
+          <input
+            type="text"
+            placeholder="ポケモンの名前を検索"
+            value={searchQuery}
+            onChange={handleSearchChange}  // Search handler function
+          />
+          {searchQuery && (
+            <button className="clear-button" onClick={() => setSearchQuery("")}>
+              &#10005; {/* Unicode character for '×' */}
+            </button>
+          )}
         </div>
       </div>
 
@@ -594,37 +615,39 @@ const App = () => {
 
     {/* Team A Pick Section */}
     <div className="teama-pick">
-          {Array(5)
-            .fill(null)
-            .map((_, index) => (
-              <div
-                key={index}
-                className={`selectpokemon-teama ${
-                  expandedPlayerIndexA === index ? "expand" : ""
-                }`} // Apply the 'expand' class if it's the player's turn
-              >
-            <div className="pick-pokemon-image-container">
-            {teamA.picks[index] ? (
-              <img
-                src={teamA.picks[index].imageUrl}
-                alt={teamA.picks[index].name.English}
-                className="pick-preview-image"
-              />
-            ) : currentTeam === teamA &&
-              currentAction === "PICK" &&
-              selectedPokemon &&
-              index === teamA.picks.length ? (
-              <img
-                src={selectedPokemon.imageUrl}
-                alt={selectedPokemon.name.English}
-                className="pick-preview-image"
-              />
-            ) : (
-              <span>{pickOrderA[index]}</span> /* Display pick draft number */
-            )}
-          </div>
+    {Array(5)
+    .fill(null)
+    .map((_, index) => (
+      <div
+        key={index}
+        className={`selectpokemon-teama ${expandedPlayerIndexA === index ? "expand" : ""}`}
+      >
+        {/* Pick Pokémon Image */}
+        <div className="pick-pokemon-image-container">
+          {teamA.picks[index] ? (
+            <img
+              src={teamA.picks[index].imageUrl}
+              alt={teamA.picks[index].name.English}
+              className="pick-preview-image"
+            />
+          ) : currentTeam === teamA &&
+            currentAction === "PICK" &&
+            selectedPokemon &&
+            index === teamA.picks.length ? (
+            <img
+              src={selectedPokemon.imageUrl}
+              alt={selectedPokemon.name.English}
+              className="pick-preview-image"
+            />
+          ) : (
+            <span>{pickOrderA[index]}</span>
+          )}
+        </div>
 
-    <div className="icon-container">
+         {/* Container for Icon and Dropdown */}
+         <div className="icon-dropdown-container">
+          {/* Icon Container (Held Items + Battle Item) */}
+          <div className="icon-container">
             {Array(3)
               .fill(null)
               .map((_, iconIndex) => (
@@ -643,46 +666,49 @@ const App = () => {
                   </div>
                 </div>
               ))}
-              {/* Battle Item Circle for Team A */}
-              <div className="battle-item-circle" onClick={() => handlePopupOpen("A",index)}>
-                {selectedBattleItemsA[index] && (
-                  <img
-                    src={selectedBattleItemsA[index].imageUrl}
-                    alt={selectedBattleItemsA[index].name}
-                    className="battle-item-selected"
-                  />
-                )}
-              </div>
-
-              {/* Show the popup only for the currently selected player */}
-              {popupOpenIndex === index && (
-                <BattleItemPopup
-                  onSelect={(item) => handleBattleItemSelect(index, item,"A")} // Handle battle item selection for that player
+            {/* Battle Item Circle for Team A */}
+            <div className="battle-item-circle" onClick={() => handlePopupOpen("A", index)}>
+              {selectedBattleItemsA[index] && (
+                <img
+                  src={selectedBattleItemsA[index].imageUrl}
+                  alt={selectedBattleItemsA[index].name}
+                  className="battle-item-selected"
                 />
               )}
-              </div>
-              
-          {/* Player image */}
-          <div className="playerpulldown-containerA">
-                  <div className="player-imageA">
-                    <img src={playerImagesA[index]} alt={`Player ${index + 1}`} />
-                  </div>
-                <select
-                  value={selectedLanesA[index]} 
-                  onChange={(event) => handleLaneSelect("A",index, event)}
-                  className="lane-select-dropdown"  // 必要に応じてクラスを追加
-                >
-                  {lanes.map((lane, i) => (
-                    <option key={i} value={lane}>
-                      {lane}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            </div>
+          </div>
+
+          {/* Lane Select Dropdown - Placed under the icon-container */}
+          <div className="lane-select-dropdown-container">
+            <select
+              value={selectedLanesA[index]}
+              onChange={(event) => handleLaneSelect("A", index, event)}
+              className="lane-select-dropdown"
+            >
+              {lanes.map((lane, i) => (
+                <option key={i} value={lane}>
+                  {lane}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-      ))}
+
+          {/* Battle Item Popup */}
+        {popupOpenIndex === index && (
+          <BattleItemPopup
+            onSelect={(item) => handleBattleItemSelect(index, item, "A")}
+          />
+        )}
+
+        {/* Player Image */}
+        <div className="player-imageA">
+          <img src={playerImagesA[index]} alt={`Player ${index + 1}`} />
+        </div>
+      </div>
+    ))}
+    </div>
   </div>
-</div>
 
 
     {/* Main Content */}
@@ -778,8 +804,8 @@ const App = () => {
             <img src={`${process.env.PUBLIC_URL}/Theia_Sky_Ruins.png`} alt="Theia Sky Ruins Map" />
             {/* Draw circles based on lane selection */}
             {renderCirclesForLanes(selectedLanesA, selectedLanesB, teamA, teamB)}
-            <button className="confirm-button" onClick={handlePopupClose}>
-              閉じる
+            <button className="close-button" onClick={handlePopupClose}>
+            ×
             </button>
           </div>
         </div>
@@ -818,97 +844,100 @@ const App = () => {
 
     {/* Team B Pick Section */}
     <div className="teamb-pick">
-          {Array(5)
-            .fill(null)
-            .map((_, index) => (
-              <div
-                key={index}
-                className={`selectpokemon-teamb ${
-                  expandedPlayerIndexB === index ? "expand" : ""
-                }`} // Apply the 'expand' class if it's the player's turn
-              >
-                <div className="playerpulldown-containerB">
-                  <div className="player-imageB">
-                    <img src={playerImagesB[index]} alt={`Player ${index + 1}`} />
-                  </div>
-                <select
-                  value={selectedLanesB[index]} 
-                  onChange={(event) => handleLaneSelect("B",index, event)}
-                  className="lane-select-dropdown"  // 必要に応じてクラスを追加
-                >
-                  {lanes.map((lane, i) => (
-                    <option key={i} value={lane}>
-                      {lane}
-                    </option>
-                  ))}
-                </select>
-                </div>
+    {Array(5)
+    .fill(null)
+    .map((_, index) => (
+      <div
+        key={index}
+        className={`selectpokemon-teamb ${expandedPlayerIndexB === index ? "expand" : ""}`}
+        style={{ display: 'flex', alignItems: 'center' }}  // Horizontally align the contents
+      >
+        {/* Player Image on the Left */}
+        <div className="player-imageB">
+          <img src={playerImagesB[index]} alt={`Player ${index + 1}`} />
+        </div>
 
-                <div className="icon-containerB">
-                  {/* Battle Item Circle for Team B */}
-                  <div className="battle-item-circle" onClick={() => handlePopupOpen("B", index)}>
-                    {selectedBattleItemsB[index] && (
-                  <img
-                    src={selectedBattleItemsB[index].imageUrl}
-                    alt={selectedBattleItemsB[index].name}
-                    className="battle-item-selected"
-                  />
+        {/* Icon and Dropdown Container in the middle */}
+        <div className="icon-dropdown-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          {/* Icon Container (Held Items + Battle Item) */}
+          <div className="icon-container">
+            {Array(3)
+              .fill(null)
+              .map((_, iconIndex) => (
+                <div
+                  key={iconIndex}
+                  className="icon"
+                  onClick={() => handleIconClick("B", index, iconIndex)}
+                >
+                  <div className="icon-circle">
+                    {selectedItemsB[index][iconIndex] && (
+                      <img
+                        src={selectedItemsB[index][iconIndex].imageUrl}
+                        alt={selectedItemsB[index][iconIndex].name.English}
+                      />
                     )}
                   </div>
-
-                  {/* Show the popup only for the currently selected player */}
-                  {popupOpenIndexB === index && (
-                    <BattleItemPopup
-                      onSelect={(item) => handleBattleItemSelect(index, item, "B")} // Handle battle item selection for that player
-                    />
-                  )}
-                  {Array(3)
-                    .fill(null)
-                    .map((_, iconIndex) => (
-                      <div
-                        key={iconIndex}
-                        className="icon"
-                        onClick={() => handleIconClick("B", index, iconIndex)}
-                      >
-                        <div className="icon-circle">
-                          {selectedItemsB[index][iconIndex] && (
-                            <img
-                              src={selectedItemsB[index][iconIndex].imageUrl}
-                              alt={
-                                selectedItemsB[index][iconIndex].name.English
-                              }
-                            />
-                          )}
-                        </div>
-                      </div>
-                    ))}
                 </div>
-
-                <div className="pick-pokemon-image-container">
-                  {teamB.picks[index] ? (
-                    <img
-                      src={teamB.picks[index].imageUrl}
-                      alt={teamB.picks[index].name.English}
-                      className="pick-preview-image"
-                    />
-                  ) : currentTeam === teamB &&
-                    currentAction === "PICK" &&
-                    selectedPokemon &&
-                    index === teamB.picks.length ? (
-                    <img
-                      src={selectedPokemon.imageUrl}
-                      alt={selectedPokemon.name.English}
-                      className="pick-preview-image"
-                    />
-                  ) : (
-                    <span>
-                      {pickOrderB[index]}
-                    </span> /* Display pick draft number */
-                  )}
-                </div>
-              </div>
-            ))}
+              ))}
+            {/* Battle Item Circle for Team B */}
+            <div className="battle-item-circle" onClick={() => handlePopupOpen("B", index)}>
+              {selectedBattleItemsB[index] && (
+                <img
+                  src={selectedBattleItemsB[index].imageUrl}
+                  alt={selectedBattleItemsB[index].name}
+                  className="battle-item-selected"
+                />
+              )}
+            </div>
           </div>
+
+          {/* Lane Select Dropdown - Placed under the icon-container */}
+          <div className="lane-select-dropdown-container">
+            <select
+              value={selectedLanesB[index]}
+              onChange={(event) => handleLaneSelect("B", index, event)}
+              className="lane-select-dropdown"
+            >
+              {lanes.map((lane, i) => (
+                <option key={i} value={lane}>
+                  {lane}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Pick Pokémon Image on the right */}
+        <div className="pick-pokemon-image-container">
+          {teamB.picks[index] ? (
+            <img
+              src={teamB.picks[index].imageUrl}
+              alt={teamB.picks[index].name.English}
+              className="pick-preview-image"
+            />
+          ) : currentTeam === teamB &&
+            currentAction === "PICK" &&
+            selectedPokemon &&
+            index === teamB.picks.length ? (
+            <img
+              src={selectedPokemon.imageUrl}
+              alt={selectedPokemon.name.English}
+              className="pick-preview-image"
+            />
+          ) : (
+            <span>{pickOrderB[index]}</span>
+          )}
+        </div>
+
+        {/* Battle Item Popup */}
+        {popupOpenIndex === index && (
+          <BattleItemPopup
+            onSelect={(item) => handleBattleItemSelect(index, item, "B")}
+          />
+        )}
+      </div>
+    ))}
+</div>
         </div>
 
       {/* Footer */}
