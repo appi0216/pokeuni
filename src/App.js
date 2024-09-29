@@ -68,29 +68,57 @@ const App = () => {
   const [expandedPlayerIndexA, setExpandedPlayerIndexA] = useState(null); // TeamAの拡大状態
   const [expandedPlayerIndexB, setExpandedPlayerIndexB] = useState(null); // TeamBの拡大状態
   const [searchQuery, setSearchQuery] = useState(""); // New search input state
+  const [historyIndex, setHistoryIndex] = useState(0); // Track the history for forward/backward navigation
+  const [history, setHistory] = useState([]); // Track all actions (ban/pick history)
 
   const handleUndoClick = () => {
-    if (draftIndex > 0) {
-      updateDraft(-1);
-      const lastAction = default_draft[draftIndex - 1];
-      const lastTeam = lastAction[0];
-      const lastActionType = lastAction[1];
+    if (historyIndex > 0) {
+      const previousAction = history[historyIndex - 1];
+      const previousTeam = previousAction.team;
+      const previousActionType = previousAction.action;
 
-      if (lastActionType === "BAN") {
-        lastTeam.bans.pop();
-        setBans([...bans.slice(0, -1)]);
-      } else if (lastActionType === "PICK") {
-        lastTeam.picks.pop();
-        setPicks([...picks.slice(0, -1)]);
+      // Revert the last action
+      if (previousActionType === "BAN") {
+        previousTeam.bans.pop();
+        setBans([...previousTeam.bans]);
+      } else if (previousActionType === "PICK") {
+        previousTeam.picks.pop();
+        setPicks([...previousTeam.picks]);
       }
+
+      // Update draft and history index
+      setDraftIndex(draftIndex - 1);
+      setHistoryIndex(historyIndex - 1);
+      setCurrentTeam(default_draft[draftIndex - 1][0]);
+      setCurrentAction(default_draft[draftIndex - 1][1]);
     }
   };
 
+  // Handle the proceed button (進む)
   const handleProceedClick = () => {
-    if (draftIndex < default_draft.length - 1) {
-      updateDraft(1);  // Move forward by 1 step
+    if (historyIndex < history.length) {
+      const nextAction = history[historyIndex];
+      const nextTeam = nextAction.team;
+      const nextActionType = nextAction.action;
+      const nextPokemon = nextAction.pokemon;
+
+      // Redo the next action
+      if (nextActionType === "BAN") {
+        nextTeam.ban(nextPokemon);
+        setBans([...nextTeam.bans]);
+      } else if (nextActionType === "PICK") {
+        nextTeam.pick(nextPokemon);
+        setPicks([...nextTeam.picks]);
+      }
+
+      // Update draft and history index
+      setDraftIndex(draftIndex + 1);
+      setHistoryIndex(historyIndex + 1);
+      setCurrentTeam(default_draft[draftIndex + 1][0]);
+      setCurrentAction(default_draft[draftIndex + 1][1]);
     }
   };
+
 
   // Function to handle search input changes
   const handleSearchChange = (event) => {
@@ -385,26 +413,38 @@ const App = () => {
 
   const handleConfirmClick = () => {
     if (selectedPokemon) {
-      if (userInteracted) {
-        if (currentAction === "BAN") {
-          banSound.current.play().catch((error) => {
-            console.error("Error playing sound:", error);
-          });
-        } else if (currentAction === "PICK" && crySound.current) {
-          crySound.current.play().catch((error) => {
-            console.error("Error playing sound:", error);
-          });
-        }
-      }
+      const newHistory = [...history];
+
       if (currentAction === "BAN") {
         currentTeam.ban(selectedPokemon);
         setBans([...bans, selectedPokemon]);
+
+        // Record the action in the history
+        newHistory.push({ team: currentTeam, action: "BAN", pokemon: selectedPokemon });
       } else if (currentAction === "PICK") {
         currentTeam.pick(selectedPokemon);
         setPicks([...picks, selectedPokemon]);
+
+        // Record the action in the history
+        newHistory.push({ team: currentTeam, action: "PICK", pokemon: selectedPokemon });
       }
-      updateDraft(1);
-      setSelectedPokemon(null);
+
+      // Update history and indices
+      setHistory(newHistory);
+      setHistoryIndex(historyIndex + 1);
+      setDraftIndex(draftIndex + 1);
+      setSelectedPokemon(null); // Clear selected Pokémon for the next step
+
+      // Update current team and action
+      if (draftIndex + 1 < default_draft.length) {
+        setCurrentTeam(default_draft[draftIndex + 1][0]);
+        setCurrentAction(default_draft[draftIndex + 1][1]);
+      }
+
+      // Handle draft completion
+      if (draftIndex + 1 === default_draft.length - 1) {
+        setDraftComplete(true);
+      }
     }
   };
 
@@ -612,12 +652,26 @@ const App = () => {
     <div className="container">
       {/* Header */}
       <div className="layout__header">
+        <button 
+          className="undo-button" 
+          onClick={handleUndoClick} 
+          disabled={historyIndex === 0}
+        >
+          ←
+        </button>
         <div className="header__title">
           <h1>
             {draftComplete ? "ドラフトは完了しました。" : displayText}{" "}
             {/* Just display `displayText` here */}
           </h1>
         </div>
+        <button
+          className="proceed-button"
+          onClick={handleProceedClick}
+          disabled={historyIndex >= history.length}
+        >
+          →
+        </button>
         <div className="dropdown">
           <select onChange={handleTypeChange} value={selectedType}>
             <option value="すべて">すべて</option>
@@ -1050,16 +1104,6 @@ const App = () => {
           }`}
         >
         {currentAction === "BAN" ? "BAN" : currentAction === "COMPLETE" ? "完了" : "PICK"}
-        </button>
-        <button className="undo-button" onClick={handleUndoClick}>
-          戻る
-        </button>
-        <button
-          className="proceed-button"
-          onClick={handleProceedClick}
-          disabled={draftIndex >= default_draft.length - 1}
-        >
-          進む
         </button>
       </div>
     </div>
