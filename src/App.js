@@ -41,6 +41,7 @@ const default_draft = [
   [teamA, "PICK"],
   [teamA, "PICK"],
   [teamB, "PICK"],
+  ["", "COMPLETE"]  // Add this phase for draft completion
 ];
 
 const banOrderA = [1, 3]; // Team A's ban positions
@@ -67,6 +68,29 @@ const App = () => {
   const [expandedPlayerIndexA, setExpandedPlayerIndexA] = useState(null); // TeamAの拡大状態
   const [expandedPlayerIndexB, setExpandedPlayerIndexB] = useState(null); // TeamBの拡大状態
   const [searchQuery, setSearchQuery] = useState(""); // New search input state
+
+  const handleUndoClick = () => {
+    if (draftIndex > 0) {
+      updateDraft(-1);
+      const lastAction = default_draft[draftIndex - 1];
+      const lastTeam = lastAction[0];
+      const lastActionType = lastAction[1];
+
+      if (lastActionType === "BAN") {
+        lastTeam.bans.pop();
+        setBans([...bans.slice(0, -1)]);
+      } else if (lastActionType === "PICK") {
+        lastTeam.picks.pop();
+        setPicks([...picks.slice(0, -1)]);
+      }
+    }
+  };
+
+  const handleProceedClick = () => {
+    if (draftIndex < default_draft.length - 1) {
+      updateDraft(1);  // Move forward by 1 step
+    }
+  };
 
   // Function to handle search input changes
   const handleSearchChange = (event) => {
@@ -631,7 +655,7 @@ const App = () => {
                   <img
                     src={teamA.bans[index].imageUrl}
                     alt={teamA.bans[index].name.English}
-                    className="ban-preview-image"
+                    className="banned-image"
                   />
                 ) : currentTeam === teamA &&
                   currentAction === "BAN" &&
@@ -640,7 +664,7 @@ const App = () => {
                   <img
                     src={selectedPokemon.imageUrl}
                     alt={selectedPokemon.name.English}
-                    className="banned-image"
+                    className="ban-preview-image"
                   />
                 ) : (
                   <span>{banOrderA[index]}</span> /* Display ban draft number */
@@ -1020,12 +1044,22 @@ const App = () => {
         </button>
         <button
           onClick={handleConfirmClick}
-          disabled={!selectedPokemon}
+          disabled={currentAction === "COMPLETE" || !selectedPokemon}
           className={`confirm-button ${
-            currentAction === "BAN" ? "ban-button" : "pick-button"
+          currentAction === "BAN" ? "ban-button" : "pick-button"
           }`}
         >
-          {currentAction === "BAN" ? "BAN" : "PICK"}
+        {currentAction === "BAN" ? "BAN" : currentAction === "COMPLETE" ? "完了" : "PICK"}
+        </button>
+        <button className="undo-button" onClick={handleUndoClick}>
+          戻る
+        </button>
+        <button
+          className="proceed-button"
+          onClick={handleProceedClick}
+          disabled={draftIndex >= default_draft.length - 1}
+        >
+          進む
         </button>
       </div>
     </div>
