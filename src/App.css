@@ -71,6 +71,7 @@ body::after {
   grid-column: span 5 / span 5;
 }
 
+
 .name-search {
   position: relative;
   display: inline-block;
@@ -569,7 +570,7 @@ body::after {
   margin: 0;
   cursor: pointer;
   border: 2px solid #ccc;
-  background-color: #61dafb;
+  background-color: transparent;
   color: white;
   border-radius: 5px;
   transition: all 0.3s ease;
@@ -693,6 +694,19 @@ button:active {
   background-color: #ccc; /* Override the button color when disabled */
   opacity: 0.6; /* Make disabled buttons look inactive */
   cursor: not-allowed; /* Change the cursor when disabled */
+}
+
+.reset-button {
+  grid-column-start: 7;
+  background-color: #61dafb;
+  color: white;
+  border: none;
+  padding: 1vh 2vw;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 1.2vw;
+  transition: font-size 0.3s ease, padding 0.3s ease;
+  border: 2px #ccc;
 }
 
 .lane-selection-popup {

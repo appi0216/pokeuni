@@ -70,6 +70,7 @@ const App = () => {
   const [searchQuery, setSearchQuery] = useState(""); // New search input state
   const [historyIndex, setHistoryIndex] = useState(0); // Track the history for forward/backward navigation
   const [history, setHistory] = useState([]); // Track all actions (ban/pick history)
+  
 
   const handleUndoClick = () => {
     if (historyIndex > 0) {
@@ -117,6 +118,31 @@ const App = () => {
       setCurrentTeam(default_draft[draftIndex + 1][0]);
       setCurrentAction(default_draft[draftIndex + 1][1]);
     }
+  };
+
+  const handleResetClick = () => {
+    // すべてのbanとpickリストを初期化
+    setBans([]);  
+    setPicks([]);
+    teamA.bans = [];
+    teamA.picks = [];
+    teamB.bans = [];
+    teamB.picks = [];
+    
+    // ドラフトインデックスやチーム、アクションをリセット
+    setDraftIndex(0);
+    setCurrentTeam(default_draft[0][0]);
+    setCurrentAction(default_draft[0][1]);
+    
+    // ドラフト完了状態のリセット
+    setDraftComplete(false);
+    
+    // 履歴と履歴インデックスを初期化
+    setHistory([]);
+    setHistoryIndex(0);
+    
+    // 選択されたポケモンをリセット
+    setSelectedPokemon(null);
   };
 
 
@@ -1104,6 +1130,9 @@ const App = () => {
           }`}
         >
         {currentAction === "BAN" ? "BAN" : currentAction === "COMPLETE" ? "完了" : "PICK"}
+        </button>
+        <button className="reset-button" onClick={handleResetClick}>
+          リセット
         </button>
       </div>
     </div>
