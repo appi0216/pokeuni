@@ -3,6 +3,7 @@ import "./App.css";
 import { heldItems } from "./data/heldItems";
 import { pokemonList } from "./data/pokemonList";
 import { battleItems } from "./data/battleItems";
+import { defaultHeldItems } from './data/defaultHeldItems';
 
 class Team {
   constructor(name) {
@@ -58,7 +59,6 @@ const App = () => {
   const [picks, setPicks] = useState([]);
   const [draftIndex, setDraftIndex] = useState(0);
   const [selectedPokemon, setSelectedPokemon] = useState(null);
-  const [userInteracted, setUserInteracted] = useState(false);
   const [draftComplete, setDraftComplete] = useState(false);
   const [displayText, setDisplayText] = useState(""); // For animated text
   const displayTextRef = useRef(""); // Track the current displayed text
@@ -70,7 +70,44 @@ const App = () => {
   const [searchQuery, setSearchQuery] = useState(""); // New search input state
   const [historyIndex, setHistoryIndex] = useState(0); // Track the history for forward/backward navigation
   const [history, setHistory] = useState([]); // Track all actions (ban/pick history)
+  const [bgm, setBgm] = useState(null); // BGM audio state
+  const [bgmVolume, setBgmVolume] = useState(0.5); // BGM volume state
+  const [cryVolume, setCryVolume] = useState(0.5); // Cry volume state
+  const [userInteracted, setUserInteracted] = useState(false); // Track if user interacted
+
+  useEffect(() => {
+    const banBgm = new Audio("/42 最後の道.mp3");
+    const pickBgm = new Audio("/43 ラストバトル（ＶＳライバル）.mp3");
   
+    if (userInteracted) {
+      if (bgm) {
+        bgm.pause(); // Stop the current BGM if one is playing
+      }
+  
+      if (currentAction === "BAN") {
+        setBgm(banBgm);
+      } else if (currentAction === "PICK") {
+        setBgm(pickBgm);
+      }
+    }
+  }, [currentAction, userInteracted]);
+  
+  // Set volume and play BGM once user interacts
+  useEffect(() => {
+    if (userInteracted && bgm) {
+      bgm.volume = bgmVolume;
+      bgm.play().catch((error) => {
+        console.error("Error playing audio:", error);
+      });
+    }
+  }, [bgm, bgmVolume, userInteracted]);
+  
+  // Handle volume change
+  const handleVolumeChange = (event) => {
+    const newVolume = event.target.value / 100;
+    setBgmVolume(newVolume); // Adjust BGM volume
+    setCryVolume(newVolume); // Adjust Pokémon cry volume
+  };
 
   const handleUndoClick = () => {
     if (historyIndex > 0) {
@@ -270,32 +307,14 @@ const App = () => {
 
   const [activeTeamPopup, setActiveTeamPopup] = useState(null); // "A" or "B" or null
 
-  const banSound = useRef(
-    new Audio("${process.env.PUBLIC_URL}/決定ボタンを押す52.mp3")
-  );
-  const crySound = useRef(null);
-
-  useEffect(() => {
-    const preloadAudio = async () => {
-      banSound.current = new Audio("/決定ボタンを押す52.mp3");
-      const pokemonCries = pokemonList.map((pokemon) => {
-        const audio = new Audio(`/${pokemon.name.English.toLowerCase()}.mp3`);
-        return audio;
-      });
-      crySound.current = pokemonCries;
-    };
-
-    preloadAudio();
-  }, []);
-
   useEffect(() => {
     const handleUserInteraction = () => {
       setUserInteracted(true);
       document.removeEventListener("click", handleUserInteraction);
     };
-
+  
     document.addEventListener("click", handleUserInteraction);
-
+  
     return () => {
       document.removeEventListener("click", handleUserInteraction);
     };
@@ -401,11 +420,13 @@ const App = () => {
       return;
     }
     setSelectedPokemon(pokemon);
-
-    if (currentAction === "PICK") {
-      crySound.current = new Audio(
-        `/${pokemon.name.English.toLowerCase()}.mp3`
-      );
+  
+    if (currentAction === "PICK" && userInteracted) {
+      const cry = new Audio(`/${pokemon.name.English.toLowerCase()}.mp3`);
+      cry.volume = cryVolume;
+      cry.play().catch((error) => {
+        console.error("Error playing Pokémon cry:", error);
+      });
     }
   };
 
@@ -440,36 +461,57 @@ const App = () => {
   const handleConfirmClick = () => {
     if (selectedPokemon) {
       const newHistory = [...history];
-
+  
       if (currentAction === "BAN") {
         currentTeam.ban(selectedPokemon);
         setBans([...bans, selectedPokemon]);
-
+  
         // Record the action in the history
         newHistory.push({ team: currentTeam, action: "BAN", pokemon: selectedPokemon });
       } else if (currentAction === "PICK") {
         currentTeam.pick(selectedPokemon);
         setPicks([...picks, selectedPokemon]);
-
+  
         // Record the action in the history
         newHistory.push({ team: currentTeam, action: "PICK", pokemon: selectedPokemon });
+  
+        // Automatically assign held items based on picked Pokémon, if defined
+        const defaultItems = defaultHeldItems[selectedPokemon.name.English.toLowerCase()];
+        if (defaultItems) {
+          if (currentTeam === teamA) {
+            const playerIndex = teamA.picks.length - 1; // Get the last picked player index
+            setSelectedItemsA((prevItems) => {
+              const updatedItems = [...prevItems];
+              updatedItems[playerIndex] = defaultItems.map(
+                (itemName) => heldItems.find((item) => item.name.English === itemName)
+              );
+              return updatedItems;
+            });
+          } else {
+            const playerIndex = teamB.picks.length - 1; // Get the last picked player index
+            setSelectedItemsB((prevItems) => {
+              const updatedItems = [...prevItems];
+              updatedItems[playerIndex] = defaultItems.map(
+                (itemName) => heldItems.find((item) => item.name.English === itemName)
+              );
+              return updatedItems;
+            });
+          }
+        }
       }
-
+  
       // Update history and indices
       setHistory(newHistory);
       setHistoryIndex(historyIndex + 1);
-      setDraftIndex(draftIndex + 1);
       setSelectedPokemon(null); // Clear selected Pokémon for the next step
-
-      // Update current team and action
-      if (draftIndex + 1 < default_draft.length) {
-        setCurrentTeam(default_draft[draftIndex + 1][0]);
-        setCurrentAction(default_draft[draftIndex + 1][1]);
-      }
-
-      // Handle draft completion
-      if (draftIndex + 1 === default_draft.length - 1) {
-        setDraftComplete(true);
+  
+      // Proceed to the next phase by updating the draft index
+      if (draftIndex < default_draft.length - 1) {
+        setDraftIndex(draftIndex + 1);
+        setCurrentTeam(default_draft[draftIndex + 1][0]); // Update to the next team
+        setCurrentAction(default_draft[draftIndex + 1][1]); // Update to the next action (BAN or PICK)
+      } else {
+        setDraftComplete(true); // If the draft is complete, mark it as done
       }
     }
   };
@@ -721,7 +763,18 @@ const App = () => {
             </button>
           )}
         </div>
+        <div className="volume-control">
+        <label htmlFor="volume">Volume: </label>
+        <input
+          id="volume"
+          type="range"
+          min="0"
+          max="100"
+          value={bgmVolume * 100}
+          onChange={handleVolumeChange}
+        />
       </div>
+    </div>
 
       {/* Side Navi 1 - Team A */}
       <div className="layout__sideNavi1">

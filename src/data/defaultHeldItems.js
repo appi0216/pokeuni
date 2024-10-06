@@ -1,4 +1,4 @@
-const defaultHeldItems = {
+export const defaultHeldItems = {
 
     mamoswine: ["Exp. Share", "Focus Band", "Attack Weight"],
     snorlax: ["Exp. Share", "Focus Band", "Float Stone"],
@@ -7,7 +7,7 @@ const defaultHeldItems = {
     umbreon: ["Exp. Share", "Focus Band", "Aeos Cookie"],
     crustle: ["Exp. Share", "Focus Band", "Resonant Guard"],
     slowbro: ["Exp. Share", "Focus Band", "Curse Incense"],
-    lapras: ["Sp.Attack Weight", "Slick Spoon", "Focus Band"],
+    lapras: ["Sp. Atk Specs", "Slick Spoon", "Focus Band"],
     hooh: ["Exp. Share", "Resonant Guard", "Curse Bangles"],
     goodra: ["Focus Band", "Rapid-Fire Scarf", "Resonant Guard"],
     greedent: ["Exp. Share", "Attack Weight", "Focus Band"],
@@ -16,7 +16,7 @@ const defaultHeldItems = {
     blissey: ["Exp. Share", "Focus Band", "Wise Glasses"],
     comfey: ["Exp. Share", "Wise Glasses", "Buddy Barrier"],
     hoopa: ["Exp. Share", "Muscle Band", "Curse Incense"],
-    mrmime: ["Exp. Share", "Sp.Attack Weight", "Choice Specs"],
+    mrmime: ["Exp. Share", "Sp. Atk Specs", "Choice Specs"],
     sableye: ["Exp. Share", "Float Stone", "Leftovers"],
     cramorant: ["Slick Spoon", "Choice Specs", "Energy Amplifier"],
     ninetales: ["Slick Spoon", "Choice Specs", "Energy Amplifier"],
@@ -26,8 +26,8 @@ const defaultHeldItems = {
     delphox: ["Slick Spoon", "Choice Specs", "Energy Amplifier"],
     chandelure: ["Slick Spoon", "Choice Specs", "Curse Incense"],
     gardevoir: ["Slick Spoon", "Choice Specs", "Wise Glasses"],
-    miraidon: ["Slick Spoon", "Choice Specs", "Sp.Attack Weight"],
-    mew: ["Choice Specs", "Wise Glasses", "Sp.Attack Weight"],
+    miraidon: ["Slick Spoon", "Choice Specs", "Sp. Atk Specs"],
+    mew: ["Choice Specs", "Wise Glasses", "Sp. Atk Specs"],
     inteleon: ["Slick Spoon", "Choice Specs", "Wise Glasses"],
     Venusaur: ["Slick Spoon", "Choice Specs", "Energy Amplifier"],
     mewtwoy: ["Slick Spoon", "Muscle Band", "Rapid-Fire Scarf"],
@@ -58,15 +58,14 @@ const defaultHeldItems = {
     zacian: ["Rusted Sword", "Muscle Band", "Razor Claw"],
     ceruledge: ["Razor Claw", "Attack Weight", "Weakness Policy"],
     leafeon: ["Attack Weight", "Razor Claw", "Energy Amplifier"],
-    gengar: ["Sp.Attack Weight", "Sp.Attack Weight", "Wise Glasses"],
+    gengar: ["Sp. Atk Specs", "Slick Spoon", "Wise Glasses"],
     absol: ["Scope Lens", "Razor Claw", "Charging Charm"],
-    zoroark: ["Attack Weight", "Weakness Policy", "Razor Claw"],
+    zoroark: ["Attack Weight", "Focus Band", "Razor Claw"],
     dodrio: ["Attack Weight", "Charging Charm", "Razor Claw"],
     talonflame: ["Attack Weight", "Float Stone", "Razor Claw"],
     zeraora: ["Razor Claw", "Weakness Policy", "Focus Band"],
     meowscarada: ["Attack Weight", "Razor Claw", "Energy Amplifier"],
+    armarouge: ["Slick Spoon", "Choice Specs", "Wise Glasses"],
     // Add more Pokémon as needed
 };
 
-
-export default defaultHeldItems;

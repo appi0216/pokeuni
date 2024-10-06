@@ -53,6 +53,12 @@ export const battleItems = [
       imageUrl:
         "https://d275t8dp8rxb42.cloudfront.net/items/battle/Goal+Getter.png"
     },
+    {
+      id: 10,
+      name: { Japanese: "エリアコントローラー", English: "Goal Hacker" },
+      imageUrl:
+        "https://d275t8dp8rxb42.cloudfront.net/items/battle/Goal+Hacker.png"
+    },
   
   
   ];
